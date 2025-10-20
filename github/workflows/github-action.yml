@@ -1,0 +1,76 @@
+name: github-action
+run-name: ${{ github.actor }} is out building GitHub Actions
+
+on:
+  push:
+    # Pattern matched against refs/tags
+    tags:        
+      - '**' 
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build Maven Projects
+        run: |
+          mvn clean package -f ./userservice/pom.xml
+          mvn clean package -f ./orderservice/pom.xml
+          mvn clean package -f ./storeservice/pom.xml
+          mvn clean package -f ./reviewservice/pom.xml
+
+      - name: Docker Build and push for Userservice
+        uses: docker/build-push-action@v4
+        with:
+          context: ./userservice
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/userservice:latest
+            ghcr.io/${{ github.repository }}/userservice:${{ github.ref_name }}
+            
+      - name: Docker Build and push for Orderservice
+        uses: docker/build-push-action@v4
+        with:
+          context: ./orderservice
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/orderservice:latest
+            ghcr.io/${{ github.repository }}/orderservice:${{ github.ref_name }}
+            
+      - name: Docker Build and push for Storeservice
+        uses: docker/build-push-action@v4
+        with:
+          context: ./storeservice
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/storeservice:latest
+            ghcr.io/${{ github.repository }}/storeservice:${{ github.ref_name }}
+            
+      - name: Docker Build and push for Reviewservice
+        uses: docker/build-push-action@v4
+        with:
+          context: ./reviewservice
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/reviewservice:latest
+            ghcr.io/${{ github.repository }}/reviewservice:${{ github.ref_name }}
+            

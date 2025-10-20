@@ -1,0 +1,46 @@
+### 헬스 체크 (서버 상태 확인)
+GET http://localhost:8081/users/health
+Accept: text/plain
+
+### 회원가입 요청 테스트
+POST http://localhost:8081/users/signup
+Content-Type: application/json
+
+{
+  "username": "jinju47373737",
+  "password": "Test@1234",
+  "address": "Seoul",
+  "role": "CUSTOMER"
+}
+
+
+### 회원가입 요청 테스트
+POST http://localhost:8081/users/signup
+Content-Type: application/json
+
+{
+"username": "jinju1111737",
+"password": "Test@1234",
+"address": "Seoul",
+"role": "MANAGER"
+}
+
+### 로그인 요청 테스트
+POST http://localhost:8081/users/login
+Content-Type: application/json
+
+{
+  "username": "jinju1111737",
+  "password": "Test@1234"
+}
+
+### 회원가입 요청 테스트
+POST http://localhost:8081/users/signup
+Content-Type: application/json
+
+{
+  "username": "ddos1234",
+  "password": "Test@1234",
+  "address": "경기도 수원시 장안구 만석로159번길31",
+  "role": "CUSTOMER"
+}

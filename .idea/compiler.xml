@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.32/17d46b3e205515e1e8efd3ee4d57ce8018914163/lombok-1.18.32.jar" />
+        </processorPath>
+        <module name="delivery_system.orderservice.main" />
+        <module name="delivery_system.userservice.main" />
+        <module name="delivery_system.reviewservice.main" />
+        <module name="delivery_system.storeservice.main" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="21" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="delivery-system.userservice" options="-parameters" />
+      <module name="delivery-system.userservice.main" options="-parameters" />
+      <module name="delivery-system.userservice.test" options="-parameters" />
+      <module name="delivery_system.gateway" options="-parameters" />
+      <module name="delivery_system.gateway.main" options="-parameters" />
+      <module name="delivery_system.gateway.test" options="-parameters" />
+      <module name="delivery_system.orderservice" options="-parameters" />
+      <module name="delivery_system.orderservice.main" options="-parameters" />
+      <module name="delivery_system.orderservice.test" options="-parameters" />
+      <module name="delivery_system.plugin" options="-parameters" />
+      <module name="delivery_system.plugin.functionalTest" options="-parameters" />
+      <module name="delivery_system.plugin.main" options="-parameters" />
+      <module name="delivery_system.plugin.test" options="-parameters" />
+      <module name="delivery_system.reviewservice" options="-parameters" />
+      <module name="delivery_system.reviewservice.main" options="-parameters" />
+      <module name="delivery_system.reviewservice.test" options="-parameters" />
+      <module name="delivery_system.storeservice" options="-parameters" />
+      <module name="delivery_system.storeservice.main" options="-parameters" />
+      <module name="delivery_system.storeservice.test" options="-parameters" />
+      <module name="delivery_system.userservice" options="-parameters" />
+      <module name="delivery_system.userservice.main" options="-parameters" />
+      <module name="delivery_system.userservice.test" options="-parameters" />
+    </option>
+  </component>
+</project>

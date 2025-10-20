@@ -1,0 +1,228 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: userservice
+  labels:
+    app: userservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: userservice
+  template:
+    metadata:
+      labels:
+        app: userservice
+    spec:
+      containers:
+        - name: userservice
+          image: username/userservice:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderservice
+  labels:
+    app: orderservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderservice
+  template:
+    metadata:
+      labels:
+        app: orderservice
+    spec:
+      containers:
+        - name: orderservice
+          image: username/orderservice:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: storeservice
+  labels:
+    app: storeservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: storeservice
+  template:
+    metadata:
+      labels:
+        app: storeservice
+    spec:
+      containers:
+        - name: storeservice
+          image: username/storeservice:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reviewservice
+  labels:
+    app: reviewservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reviewservice
+  template:
+    metadata:
+      labels:
+        app: reviewservice
+    spec:
+      containers:
+        - name: reviewservice
+          image: username/reviewservice:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: userservice
+  labels:
+    app: userservice
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: userservice
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderservice
+  labels:
+    app: orderservice
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: orderservice
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: storeservice
+  labels:
+    app: storeservice
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: storeservice
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: reviewservice
+  labels:
+    app: reviewservice
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: reviewservice
+
