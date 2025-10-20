@@ -28,10 +28,7 @@ public class Store {
     //created_by: 가게 생성시각
     //updated_by: 가게 수정자
     //deleted_at: 가게 삭제시각
-    //deleted_by: 가게 삭제wk
-
-
-
+    //deleted_by: 가게 삭제자
 
 
     public static StoreRepository repository() {

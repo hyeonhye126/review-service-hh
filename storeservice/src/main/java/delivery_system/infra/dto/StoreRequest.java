@@ -1,6 +1,6 @@
 package delivery_system.infra.dto;
 
-package delivery_system.infra.dto;
+
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

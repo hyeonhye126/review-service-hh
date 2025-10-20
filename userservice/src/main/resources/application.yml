@@ -13,7 +13,7 @@ spring:
 
   datasource:
 #    url: jdbc:postgresql://localhost:5432/userservice
-    url: jdbc:postgresql://localhost:5432/userservice-db  # ✅ 변경됨
+    url: jdbc:postgresql://localhost:5432/test-db  # ✅ 변경됨
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
@@ -72,6 +72,16 @@ kakao:
     key: 867cc3ce2eec2dcb5d8d8455c771cb13
 
 logging:
+  # 1. Spring Boot 기본 로그 레벨을 INFO로 설정 (대부분 기본값으로 설정되어 있지만 명시적으로 작성)
+  #    이는 'delivery_system' 패키지에 대한 설정이 없다면, INFO 레벨을 따릅니다.
   level:
+    # 애플리케이션의 최상위 패키지를 INFO 레벨로 명시
+    # 'delivery_system.application.CategoryService'가 포함된 패키지의 INFO 로그 활성화
+    delivery_system: INFO # 👈 이 줄을 반드시 추가해야 합니다.
+
+    # 2. 기존 설정 (필요하다면 유지)
     org.hibernate.type: trace
     org.springframework.cloud: debug
+    # 3. 추가적으로 DB 관련 쿼리 로깅을 INFO 레벨로 보고 싶다면 (옵션)
+    org.springframework.jdbc.core: debug
+    org.hibernate.SQL: debug

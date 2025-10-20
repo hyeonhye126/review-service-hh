@@ -87,3 +87,28 @@ Content-Type: application/json
   "username": "merong4473",
   "password": "Test@1234"
 }
+
+
+### 회원가입 요청 테스트
+POST http://localhost:8081/users/signup
+Content-Type: application/json
+
+{
+  "username": "iamManager44",
+  "password": "Test@1234",
+  "address": "경기도 수원시 장안구 만석로159번길31 104동 1403호",
+  "role": "MANAGER"
+}
+
+
+### 로그인 요청 테스트 (토큰 받기)
+POST http://localhost:8081/users/login
+Content-Type: application/json
+
+{
+  "username": "merong4473",
+  "password": "Test@1234"
+}
+
+### MANAGER 권한으로서 카테고리 등록(+token 넣어야 함)
+
