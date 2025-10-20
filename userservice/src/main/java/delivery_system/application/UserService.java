@@ -52,9 +52,8 @@ public class UserService {
         user.setRole(UserRole.valueOf(role.toUpperCase()));
         // ✅ 비밀번호 암호화는 도메인 메서드에서 한 번만 수행
         user.signup(rawPassword, passwordEncoder);
+        user.setCreated_by(userId); // "생성한 사람"을 자기 자신의 ID로 설정
 
-        // ✅ 저장
-        //userRepository.save(user);
         // ✅ [수정] save() 대신 saveAndFlush() 사용
         // User의 INSERT 쿼리를 즉시 실행(flush)시켜
         // 'user' 객체를 'persistent' (영속) 상태로 만듭니다.
@@ -66,7 +65,8 @@ public class UserService {
         address.setAddress(rawAddress);
         address.setGeom(geom);
         address.setIsDefault(true);
-        address.setCreatedBy(userId);
+        address.setCreated_by(userId);
+
 
         addressRepository.save(address); // ⬅️ p_address 테이블에 저장
         System.out.println("✅ User signup completed: " + userId);

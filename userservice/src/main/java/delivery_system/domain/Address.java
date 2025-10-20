@@ -53,6 +53,6 @@ public class Address {
     @Column(name = "updated_by", length = 50)
     private String updatedBy;
 
-
-
+    public void setCreated_by(String userId) {
+    }
 }

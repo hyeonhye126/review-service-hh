@@ -39,8 +39,51 @@ POST http://localhost:8081/users/signup
 Content-Type: application/json
 
 {
-  "username": "ddos1234",
+  "username": "jinjukim2312",
   "password": "Test@1234",
   "address": "경기도 수원시 장안구 만석로159번길31",
   "role": "CUSTOMER"
+}
+
+### 회원가입 요청 테스트
+POST http://localhost:8081/users/signup
+Content-Type: application/json
+
+{
+  "username": "jinjukim2312",
+  "password": "Test@1234",
+  "address": "경기도 수원시 장안구 경수대로1031번길",
+  "role": "MANAGER"
+}
+
+
+### 회원가입 요청 테스트
+POST http://localhost:8081/users/signup
+Content-Type: application/json
+
+{
+  "username": "lionking2312",
+  "password": "Test@1234",
+  "address": "경기도 수원시 장안구 파장로110번길",
+  "role": "CUSTOMER"
+}
+
+### 회원가입 요청 테스트
+POST http://localhost:8081/users/signup
+Content-Type: application/json
+
+{
+  "username": "merong4473",
+  "password": "Test@1234",
+  "address": "경기도 수원시 장안구 만석로159번길31 104동 1403호",
+  "role": "CUSTOMER"
+}
+
+### 로그인 요청 테스트 (토큰 받기)
+POST http://localhost:8081/users/login
+Content-Type: application/json
+
+{
+  "username": "merong4473",
+  "password": "Test@1234"
 }
