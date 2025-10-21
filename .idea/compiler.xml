@@ -17,9 +17,6 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="delivery-system.userservice" options="-parameters" />
-      <module name="delivery-system.userservice.main" options="-parameters" />
-      <module name="delivery-system.userservice.test" options="-parameters" />
       <module name="delivery_system.gateway" options="-parameters" />
       <module name="delivery_system.gateway.main" options="-parameters" />
       <module name="delivery_system.gateway.test" options="-parameters" />
