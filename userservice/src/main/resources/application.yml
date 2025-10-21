@@ -69,7 +69,7 @@ management:
 
 kakao:
   api:
-    key: 58e9d4087feb481173052d16d8a5c06c
+    key: 711672fb2fd95570bafa44df9bfb21b7
 
 logging:
   # 1. Spring Boot 기본 로그 레벨을 INFO로 설정 (대부분 기본값으로 설정되어 있지만 명시적으로 작성)
