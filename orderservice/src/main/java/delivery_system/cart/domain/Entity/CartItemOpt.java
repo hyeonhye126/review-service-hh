@@ -1,4 +1,4 @@
-package delivery_system.domain;
+package delivery_system.cart.domain.Entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

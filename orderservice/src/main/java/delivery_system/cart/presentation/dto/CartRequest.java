@@ -1,4 +1,4 @@
-package delivery_system.dto;
+package delivery_system.cart.presentation.dto;
 
 import lombok.Data;
 import jakarta.validation.constraints.Min;

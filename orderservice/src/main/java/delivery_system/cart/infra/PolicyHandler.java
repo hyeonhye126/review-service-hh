@@ -1,10 +1,10 @@
-package delivery_system.infra;
+package delivery_system.cart.infra;
+import delivery_system.cart.domain.repository.CartRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
-import delivery_system.domain.OrderRepository;
 
 import java.util.function.Consumer;
 
@@ -13,10 +13,10 @@ import java.util.function.Consumer;
 @Configuration
 public class PolicyHandler {
 
-    private final OrderRepository orderRepository;
+    private final CartRepository cartRepository;
 
-    public PolicyHandler(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
+    public PolicyHandler(CartRepository cartRepository) {
+        this.cartRepository = cartRepository;
     }
 
     // ✅ Kafka 메시지를 수신하는 함수형 Consumer

@@ -1,7 +1,6 @@
-package delivery_system.infra;
+package delivery_system.cart.infra;
 
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.RepresentationModelProcessor;
 import org.springframework.stereotype.Component;
 import delivery_system.domain.*;

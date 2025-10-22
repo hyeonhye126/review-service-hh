@@ -1,12 +1,13 @@
 // delivery_system.order.application.CartService.java (최종 수정본)
-package delivery_system.application;
+package delivery_system.cart.application;
 
-import delivery_system.domain.*;
-import delivery_system.dto.CartAddItemRequest;
-import delivery_system.dto.CartDto;
-import delivery_system.dto.CartItemOptAddRequest;
-import delivery_system.dto.CartItemOptUpdateRequest;
-import delivery_system.repository.*;
+import delivery_system.cart.domain.Entity.Cart;
+import delivery_system.cart.domain.Entity.CartItem;
+import delivery_system.cart.domain.Entity.CartItemOpt;
+import delivery_system.cart.domain.repository.CartItemRepository;
+import delivery_system.cart.domain.repository.CartRepository;
+import delivery_system.cart.presentation.dto.CartAddItemRequest;
+import delivery_system.cart.presentation.dto.CartDto;
 import delivery_system.security.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
