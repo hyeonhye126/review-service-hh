@@ -62,7 +62,7 @@ logging:
   #    이는 'delivery_system' 패키지에 대한 설정이 없다면, INFO 레벨을 따릅니다.
   level:
     # 애플리케이션의 최상위 패키지를 INFO 레벨로 명시
-    # 'delivery_system.application.CategoryService'가 포함된 패키지의 INFO 로그 활성화
+    # 'delivery_system.category.application.service.CategoryService'가 포함된 패키지의 INFO 로그 활성화
     org.springframework.security: DEBUG # 👈 Security 필터의 상세 로그를 보기 위함
     delivery_system: INFO # 👈 이 줄을 반드시 추가해야 합니다.
 
