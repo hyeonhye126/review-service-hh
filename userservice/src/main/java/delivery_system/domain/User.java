@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 import org.springframework.data.domain.DomainEvents;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
@@ -26,7 +28,8 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", columnDefinition = "role")
+    //@Column(name = "role", columnDefinition = "role")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     private UserRole role;
 
     // 🔹 생성/수정/삭제 관리
@@ -40,7 +43,7 @@ public class User {
     private String updated_by;
 
     private LocalDateTime deleted_at;
-    private Long deleted_by;
+    private String deleted_by;
 
     @Transient
     private final List<Object> domainEvents = new ArrayList<>();
@@ -58,5 +61,6 @@ public class User {
     public Collection<Object> events() {
         return domainEvents;
     }
+
 
 }

@@ -1,4 +1,4 @@
-package delivery_system.infra;
+package delivery_system.global.infra;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

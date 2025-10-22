@@ -1,11 +1,11 @@
-package delivery_system.infra;
+package delivery_system.global.presentation;
 
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
-import delivery_system.domain.StoreRepository;
+import delivery_system.store.domain.repository.StoreRepository;
 
 import java.util.function.Consumer;
 

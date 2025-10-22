@@ -1,17 +1,16 @@
-package delivery_system.infra;
+package delivery_system.global.infra;
 
+import delivery_system.store.domain.entity.StoreEntity;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.RepresentationModelProcessor;
 import org.springframework.stereotype.Component;
-import delivery_system.domain.*;
 
 @Component
 public class StoreHateoasProcessor
-    implements RepresentationModelProcessor<EntityModel<Store>> {
+    implements RepresentationModelProcessor<EntityModel<StoreEntity>> {
 
     @Override
-    public EntityModel<Store> process(EntityModel<Store> model) {
+    public EntityModel<StoreEntity> process(EntityModel<StoreEntity> model) {
         return model;
     }
 }

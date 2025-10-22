@@ -1,4 +1,4 @@
-package delivery_system.security;
+package delivery_system.global.infra.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

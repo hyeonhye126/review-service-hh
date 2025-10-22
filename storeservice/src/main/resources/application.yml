@@ -1,9 +1,26 @@
 server:
   port: 8083
+jwt:
+  secret: ${JWT_SECRET_KEY:my-default-secret7e9f3b4c5d7c5d8e4f12a9ec17f1f4d29c6b1f8a2}
+  expiration: 3600000  # 1시간
 
 spring:
   application:
     name: storeservice
+
+  datasource:
+    #    url: jdbc:postgresql://localhost:5432/userservice
+    url: jdbc:postgresql://localhost:5432/test-db  # ✅ 변경됨
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+
 
 ---
 
@@ -17,6 +34,7 @@ spring:
         show_sql: true
         format_sql: true
         implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+        ddl-auto: update  # ⬅️ [핵심] 이 한 줄을 추가하세요
   cloud:
     stream:
       kafka:
@@ -32,17 +50,28 @@ spring:
                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       bindings:
         event-in:
-          group: userservice
+          group: storeservice
           destination: untitled
           contentType: application/json
         event-out:
-          destination: untitled
+          destination: storeservice
           contentType: application/json
 
 logging:
+  # 1. Spring Boot 기본 로그 레벨을 INFO로 설정 (대부분 기본값으로 설정되어 있지만 명시적으로 작성)
+  #    이는 'delivery_system' 패키지에 대한 설정이 없다면, INFO 레벨을 따릅니다.
   level:
+    # 애플리케이션의 최상위 패키지를 INFO 레벨로 명시
+    # 'delivery_system.category.application.service.CategoryService'가 포함된 패키지의 INFO 로그 활성화
+    org.springframework.security: DEBUG # 👈 Security 필터의 상세 로그를 보기 위함
+    delivery_system: INFO # 👈 이 줄을 반드시 추가해야 합니다.
+
+    # 2. 기존 설정 (필요하다면 유지)
     org.hibernate.type: trace
     org.springframework.cloud: debug
+    # 3. 추가적으로 DB 관련 쿼리 로깅을 INFO 레벨로 보고 싶다면 (옵션)
+    org.springframework.jdbc.core: debug
+    org.hibernate.SQL: debug
 
 ---
 
@@ -75,5 +104,5 @@ spring:
           destination: delivery_system
           contentType: application/json
         event-out:
-          destination: untitled
+          destination: delivery_system
           contentType: application/json
