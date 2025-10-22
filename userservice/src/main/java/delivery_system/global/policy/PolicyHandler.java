@@ -1,11 +1,11 @@
 package delivery_system.global.policy;
 
+import delivery_system.user.domain.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
-import delivery_system.user.domain.repository.UserRepository;
 
 import java.util.function.Consumer;
 

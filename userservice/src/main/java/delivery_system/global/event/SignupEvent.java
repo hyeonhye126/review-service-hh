@@ -1,7 +1,9 @@
 package delivery_system.global.event;
+
 import delivery_system.user.domain.entity.User;
 import delivery_system.user.domain.entity.UserRole;
-import lombok.*;
+import lombok.Data;
+import lombok.ToString;
 
 //<<< DDD / Domain Event
 @Data

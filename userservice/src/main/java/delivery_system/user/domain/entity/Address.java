@@ -1,15 +1,14 @@
 package delivery_system.user.domain.entity;
 
 import jakarta.persistence.*;
-        import lombok.Getter;
+import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-//import org.springframework.data.geo.Point;
-import org.locationtech.jts.geom.Point;
 
 @Getter
 @Setter

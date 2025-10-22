@@ -1,23 +1,22 @@
 package delivery_system.user.infra.util;
 
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.*;
-import org.json.JSONObject;
 import org.json.JSONArray;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.net.URI;
-// ❌ URLEncoder는 이제 UriComponentsBuilder가 처리하므로 삭제 가능
-// import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
-// ✅ [추가] JTS/Spatial 라이브러리 임포트
+import org.json.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class GeoCodingService {

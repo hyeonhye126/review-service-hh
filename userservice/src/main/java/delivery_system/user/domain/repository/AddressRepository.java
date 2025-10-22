@@ -3,7 +3,8 @@ package delivery_system.user.domain.repository;
 import delivery_system.user.domain.entity.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.util.UUID; // ✅ Address 엔티티의 ID 타입
+
+import java.util.UUID;
 
 @Repository // 이 인터페이스를 스프링 빈(Bean)으로 등록
 public interface AddressRepository extends JpaRepository<Address, UUID> {

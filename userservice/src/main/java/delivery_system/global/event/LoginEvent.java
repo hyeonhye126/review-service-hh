@@ -1,6 +1,7 @@
 package delivery_system.global.event;
 
-import lombok.*;
+import lombok.Data;
+import lombok.ToString;
 
 //<<< DDD / Domain Event
 @Data

@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 import org.springframework.data.domain.DomainEvents;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
