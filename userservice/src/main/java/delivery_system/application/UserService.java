@@ -65,8 +65,6 @@ public class UserService {
         address.setAddress(rawAddress);
         address.setGeom(geom);
         address.setIsDefault(true);
-        address.setCreated_by(userId);
-
 
         addressRepository.save(address); // ⬅️ p_address 테이블에 저장
         System.out.println("✅ User signup completed: " + userId);
