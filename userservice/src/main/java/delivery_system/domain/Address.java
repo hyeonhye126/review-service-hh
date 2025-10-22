@@ -28,10 +28,10 @@ public class Address {
     @Column(name = "address_name", length = 100)
     private String addressName;
 
-    @Column(length = 500)
+    @Column(name = "address_text", length = 500)
     private String address;
 
-    @Column(columnDefinition = "geography(Point, 4326)")
+    @Column(name = "geom", columnDefinition = "geography(Point,4326)")
     private Point geom;
 
     @Column(name = "is_default", nullable = false)
@@ -53,6 +53,4 @@ public class Address {
     @Column(name = "updated_by", length = 50)
     private String updatedBy;
 
-    public void setCreated_by(String userId) {
-    }
 }
