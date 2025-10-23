@@ -1,8 +1,8 @@
 package delivery_system.cart.presentation.dto;
 
-import delivery_system.cart.domain.Entity.Cart;
-import delivery_system.cart.domain.Entity.CartItem;
-import delivery_system.cart.domain.Entity.CartItemOpt;
+import delivery_system.cart.domain.Entity.Cart; // 💡 import 수정
+import delivery_system.cart.domain.Entity.CartItem; // 💡 import 수정
+import delivery_system.cart.domain.Entity.CartItemOpt; // 💡 import 수정
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,20 +13,27 @@ import java.util.stream.Collectors;
 @Data
 @Builder
 public class CartDto {
-    private UUID cartId;
     private UUID storeId;
-    private Integer totalFee;
+    private String storeName;
     private Integer deliveryFee;
-    private Integer itemFee;
+    private int totalItemFee;
+    private int finalTotalFee;
     private List<CartItemDto> items;
 
     public static CartDto from(Cart cart) {
+        int totalItemFee = cart.getItems().stream()
+                .mapToInt(item -> {
+                    int itemBaseFee = item.getMenuFee() + item.getOptions().stream().mapToInt(CartItemOpt::getFee).sum();
+                    return itemBaseFee * item.getQuantity();
+                })
+                .sum();
+
         return CartDto.builder()
-                .cartId(cart.getCartId())
                 .storeId(cart.getStoreId())
-                .totalFee(cart.getTotalFee())
+                .storeName(cart.getStoreName())
                 .deliveryFee(cart.getDeliveryFee())
-                .itemFee(cart.getItemFee())
+                .totalItemFee(totalItemFee)
+                .finalTotalFee(totalItemFee + cart.getDeliveryFee())
                 .items(cart.getItems().stream().map(CartItemDto::from).collect(Collectors.toList()))
                 .build();
     }
@@ -37,17 +44,22 @@ public class CartDto {
         private UUID cartItemId;
         private UUID menuId;
         private String menuName;
-        private Integer cartItemFee;
-        private Integer cartItemQuantity;
+        private int menuFee;
+        private int quantity;
+        private int itemTotalPrice;
         private List<CartItemOptDto> options;
 
         public static CartItemDto from(CartItem item) {
+            int optionsTotalFee = item.getOptions().stream().mapToInt(CartItemOpt::getFee).sum();
+            int itemTotalPrice = (item.getMenuFee() + optionsTotalFee) * item.getQuantity();
+
             return CartItemDto.builder()
                     .cartItemId(item.getCartItemId())
                     .menuId(item.getMenuId())
                     .menuName(item.getMenuName())
-                    .cartItemFee(item.getCartItemFee())
-                    .cartItemQuantity(item.getCartItemQuantity())
+                    .menuFee(item.getMenuFee())
+                    .quantity(item.getQuantity())
+                    .itemTotalPrice(itemTotalPrice)
                     .options(item.getOptions().stream().map(CartItemOptDto::from).collect(Collectors.toList()))
                     .build();
         }
@@ -56,21 +68,15 @@ public class CartDto {
     @Data
     @Builder
     public static class CartItemOptDto {
-        private UUID cartItemOptId;
-        private UUID menuOptId;
-        private String menuOptName;
         private UUID menuOptValueId;
         private String menuOptValueName;
-        private Integer menuOptValueFee;
+        private int fee;
 
         public static CartItemOptDto from(CartItemOpt opt) {
             return CartItemOptDto.builder()
-                    .cartItemOptId(opt.getCartItemOptId())
-                    .menuOptId(opt.getMenuOptId())
-                    .menuOptName(opt.getMenuOptName())
                     .menuOptValueId(opt.getMenuOptValueId())
                     .menuOptValueName(opt.getMenuOptValueName())
-                    .menuOptValueFee(opt.getMenuOptValueFee())
+                    .fee(opt.getFee())
                     .build();
         }
     }

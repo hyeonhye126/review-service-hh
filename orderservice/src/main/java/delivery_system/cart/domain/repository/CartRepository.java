@@ -1,13 +1,12 @@
 package delivery_system.cart.domain.repository;
 
-import delivery_system.cart.domain.Entity.Cart;
-import org.springframework.data.jpa.repository.JpaRepository;
-
+import delivery_system.cart.domain.Entity.Cart; // 💡 import 수정
 import java.util.Optional;
-import java.util.UUID;
 
-public interface CartRepository extends JpaRepository<Cart, UUID> {
+public interface CartRepository {
     Optional<Cart> findByUserId(String userId);
-}
 
-// CartItemOptRepository는 필요시 추가
+    Cart save(Cart cart);
+
+    void deleteByUserId(String userId);
+}

@@ -1,196 +1,151 @@
-// delivery_system.order.application.CartService.java (최종 수정본)
 package delivery_system.cart.application;
 
-import delivery_system.cart.domain.Entity.Cart;
-import delivery_system.cart.domain.Entity.CartItem;
+import delivery_system.cart.domain.Entity.Cart; // 💡 import 수정
+import delivery_system.cart.domain.Entity.CartItem; // 💡 import 수정
 import delivery_system.cart.domain.Entity.CartItemOpt;
-import delivery_system.cart.domain.repository.CartItemRepository;
-import delivery_system.cart.domain.repository.CartRepository;
-import delivery_system.cart.presentation.dto.CartAddItemRequest;
-import delivery_system.cart.presentation.dto.CartDto;
-import delivery_system.security.SecurityUtil;
-import jakarta.transaction.Transactional;
+import delivery_system.cart.domain.repository.*;
+import delivery_system.cart.presentation.dto.*;
+
+import delivery_system.cart.exception.CartNotFoundException;
+import delivery_system.cart.exception.CartStoreConflictException;
+import delivery_system.cart.exception.MenuInfoNotFoundException;
+
+
+import delivery_system.cart.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CartService {
+
     private final CartRepository cartRepository;
-    private final CartItemRepository cartItemRepository;
-    private final MenuRepository menuRepository;
-    private final MenuOptionValueRepository menuOptionValueRepository;
-    private final StoreRepository storeRepository;
-    private final MenuOptionRepository menuOptionRepository; // 옵션 이름 조회를 위해
+    private final ItemRepository itemRepository;
 
-    // ------------------------------------------------------------------
-    // 헬퍼 1: 금액 재계산 로직 (DDL에 맞춰 Integer 타입에 대한 null 방지 추가)
-    // ------------------------------------------------------------------
-    private void updateCartFees(Cart cart) {
-        int itemFee = 0;
-        for (CartItem item : cart.getItems()) {
-            int itemPrice = item.getCartItemFee();
-            for (CartItemOpt opt : item.getOptions()) {
-                itemPrice += opt.getMenuOptValueFee();
-            }
-            itemFee += itemPrice * item.getCartItemQuantity();
-        }
-
-        cart.setItemFee(itemFee);
-
-        // DDL: coupon_fee는 null 허용. null이면 0으로 처리
-        int couponFee = cart.getCouponFee() == null ? 0 : cart.getCouponFee();
-
-        // DDL: delivery_fee, item_fee, total_fee는 NOT NULL
-        int totalFee = itemFee - couponFee + cart.getDeliveryFee();
-        cart.setTotalFee(totalFee);
-    }
-
-    // ------------------------------------------------------------------
-    // 헬퍼 2: 메뉴/가게/옵션 DB 조회 및 검증
-    // ------------------------------------------------------------------
-    private Menu getMenu(UUID menuId) {
-        return menuRepository.findByMenuIdAndDeletedAtIsNull(menuId)
-                .orElseThrow(() -> new MenuInfoNotFoundException("메뉴(ID: " + menuId + ")"));
-    }
-
-    private Store getStore(UUID storeId) {
-        return storeRepository.findByStoreIdAndDeletedAtIsNull(storeId)
-                .orElseThrow(() -> new MenuInfoNotFoundException("가게(ID: " + storeId + ")"));
-    }
-
-    private Map<UUID, MenuOptionValue> getOptionValuesMap(List<UUID> optValueIds) {
-        if (optValueIds == null || optValueIds.isEmpty()) {
-            return Map.of();
-        }
-
-        List<MenuOptionValue> optionValues = menuOptionValueRepository
-                .findAllByMenuOptValueIdInAndDeletedAtIsNull(optValueIds);
-
-        if (optionValues.size() != optValueIds.size()) {
-            throw new MenuInfoNotFoundException("하나 이상의 옵션 값");
-        }
-
-        return optionValues.stream()
-                .collect(Collectors.toMap(MenuOptionValue::getMenuOptValueId, value -> value));
-    }
-
-    private String getOptionGroupName(UUID menuOptId) {
-        MenuOption optGroup = menuOptionRepository.findByMenuOptIdAndDeletedAtIsNull(menuOptId)
-                .orElse(null); // 옵션 그룹은 필수 정보가 아닐 수 있으므로 null 허용
-        return optGroup != null ? optGroup.getMenuOptName() : "알 수 없는 옵션 그룹";
-    }
+    private final AtomicLong uniqueIdCounter = new AtomicLong(0);
 
     // ------------------------------------------------------------------
     // 1. 항목 등록: POST /api/v1/cart
     // ------------------------------------------------------------------
     @Transactional
-    public CartDto addItemToCart(String userId, CartAddItemRequest request) {
+    public CartDto addItemToCart(CartAddItemRequest request) {
+        String userId = SecurityUtil.getCurrentUserId(); // 🔐 현재 로그인 사용자 ID
 
-        // 1) 메뉴, 가게 정보 DB에서 조회 및 검증
-        Menu menu = getMenu(request.getMenuId());
-        Store store = getStore(request.getStoreId());
+        // 1) 메뉴 정보 DB 조회 (가격 및 이름 검증)
+        MenuDetailsDto menuDetails = itemRepository.findMenuDetailsById(request.getMenuId())
+                .orElseThrow(() -> new MenuInfoNotFoundException("메뉴(ID: " + request.getMenuId() + ") 정보 없음"));
 
-        if (!menu.getStoreId().equals(store.getStoreId())) {
-            throw new MenuInfoNotFoundException("요청된 가게에 해당 메뉴가 없습니다.");
-        }
-
-        // 2) 옵션 정보 DB에서 조회 및 Map으로 정리
-        List<UUID> optValueIds = request.getOptions() != null ?
-                request.getOptions().stream().map(CartAddItemRequest.OptionDto::getMenuOptValueId).collect(Collectors.toList()) :
-                List.of();
-
-        Map<UUID, MenuOptionValue> selectedOptValues = getOptionValuesMap(optValueIds);
-
-        // 3) 장바구니 조회 또는 생성 (가게 충돌 검증)
-        Cart cart = cartRepository.findByUserId(userId).orElse(null);
+        // 2) 장바구니 조회 및 가게 충돌 검증
+        Optional<Cart> existingCart = cartRepository.findByUserId(userId);
+        Cart cart = existingCart.orElse(null);
 
         if (cart != null) {
-            if (!cart.getStoreId().equals(request.getStoreId())) {
-                // 기존 장바구니 가게와 다를 경우 예외 발생
-                Store currentStore = getStore(cart.getStoreId());
-                throw new CartStoreConflictException(currentStore.getStoreName(), store.getStoreName());
+            if (!cart.getStoreId().equals(menuDetails.getStoreId())) {
+                throw new CartStoreConflictException(cart.getStoreName(), menuDetails.getStoreName());
             }
         } else {
-            cart = new Cart();
-            cart.setCartId(UUID.randomUUID());
-            cart.setUserId(userId);
-            cart.setStoreId(request.getStoreId());
-            cart.setDeliveryFee(store.getDeliveryFee()); // 가게 배달비 적용
-            cart.setCouponFee(0);
+            // 새 장바구니 생성 (DB 조회 정보를 기반으로 초기화)
+            cart = new Cart(
+                    userId,
+                    menuDetails.getStoreId(),
+                    menuDetails.getStoreName(),
+                    menuDetails.getDeliveryFee()
+            );
         }
 
-        // 4) CartItem 및 CartItemOpt 생성/추가 (DB 조회된 가격과 이름 사용)
-        CartItem newItem = new CartItem();
-        newItem.setCartItemId(UUID.randomUUID());
-        newItem.setCart(cart);
-        newItem.setMenuId(menu.getMenuId());
-        newItem.setMenuName(menu.getMenuName());
-        newItem.setCartItemFee(menu.getMenuFee());
-        newItem.setCartItemQuantity(request.getQuantity());
+        // 3) CartItem 생성 및 가격/이름 유효성 검증
+        CartItem newItem = createCartItem(request, menuDetails);
 
-        // 옵션 설정
-        for (CartAddItemRequest.OptionDto optReq : request.getOptions()) {
-            MenuOptionValue optValue = selectedOptValues.get(optReq.getMenuOptValueId());
+        // 4) 기존 항목과 동일한 항목이 있다면 수량만 증가
+        Optional<CartItem> existingItem = cart.getItems().stream()
+                .filter(item -> isSameCartItem(item, newItem))
+                .findFirst();
 
-            CartItemOpt opt = new CartItemOpt();
-            opt.setCartItemOptId(UUID.randomUUID());
-            opt.setCartItem(newItem);
-            opt.setMenuOptId(optValue.getMenuOptId());
-            opt.setMenuOptName(getOptionGroupName(optValue.getMenuOptId()));
-            opt.setMenuOptValueId(optValue.getMenuOptValueId());
-            opt.setMenuOptValueName(optValue.getMenuOptValueName());
-            opt.setMenuOptValueFee(optValue.getMenuOptValueFee());
-            newItem.getOptions().add(opt);
+        if (existingItem.isPresent()) {
+            existingItem.get().setQuantity(existingItem.get().getQuantity() + newItem.getQuantity());
+        } else {
+            cart.getItems().add(newItem);
         }
 
-        cart.getItems().add(newItem);
+        // 5) Redis에 저장
+        cartRepository.save(cart);
 
-        // 5) 금액 업데이트 및 저장
-        updateCartFees(cart);
-        return CartDto.from(cartRepository.save(cart));
+        return CartDto.from(cart);
     }
 
     // ------------------------------------------------------------------
-    // 5. 항목 옵션 수정: PATCH /api/v1/cart/items/{cart_item_id}/opts/{cart_item_opt_id}
+    // 2. 장바구니 조회: GET /api/v1/cart
     // ------------------------------------------------------------------
-    @Transactional
-    public CartDto updateCartItemOption(String userId, UUID cartItemId, UUID cartItemOptId, UUID newOptValueId) {
-        CartItem item = cartItemRepository.findByCartItemIdAndCart_UserId(cartItemId, userId)
-                .orElseThrow(() -> new CartItemNotFoundException("장바구니 항목"));
+    public CartDto getCart() {
+        String userId = SecurityUtil.getCurrentUserId();
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new CartNotFoundException("장바구니가 비어있습니다."));
 
-        CartItemOpt targetOpt = item.getOptions().stream()
-                .filter(opt -> opt.getCartItemOptId().equals(cartItemOptId))
-                .findFirst()
-                .orElseThrow(() -> new CartItemNotFoundException("장바구니 옵션 항목"));
-
-        // 1. 새로운 옵션 값에 대한 정보 DB에서 조회
-        MenuOptionValue newOptValue = menuOptionValueRepository.findByMenuOptValueIdAndDeletedAtIsNull(newOptValueId)
-                .orElseThrow(() -> new MenuInfoNotFoundException("새로운 옵션 값(ID: " + newOptValueId + ")"));
-
-        // 2. 같은 옵션 그룹 내 변경인지 검증
-        if (!targetOpt.getMenuOptId().equals(newOptValue.getMenuOptId())) {
-            throw new CartException("다른 옵션 그룹으로 변경할 수 없습니다.");
-        }
-
-        // 3. 옵션 정보 업데이트 (DB에 복사된 값 수정)
-        targetOpt.setMenuOptValueId(newOptValue.getMenuOptValueId());
-        targetOpt.setMenuOptValueName(newOptValue.getMenuOptValueName());
-        targetOpt.setMenuOptValueFee(newOptValue.getMenuOptValueFee());
-
-        Cart cart = item.getCart();
-        updateCartFees(cart);
-        return CartDto.from(cartRepository.save(cart));
+        return CartDto.from(cart);
     }
 
     // ------------------------------------------------------------------
-    // 나머지 Service 메서드 (updateItemQuantity, deleteCartItem, addCartItemOptions, deleteCartItemOption)
-    // - 이 메서드들은 DB 조회 로직이 MenuServiceStub에 의존하지 않으므로 수정 불필요하며,
-    // - 금액 계산 시 항상 updateCartFees()를 호출하도록 이미 구현되어 있습니다.
+    // 헬퍼: CartItem 객체 생성 및 유효성 검증
     // ------------------------------------------------------------------
+    private CartItem createCartItem(CartAddItemRequest request, MenuDetailsDto menuDetails) {
+        CartItem item = new CartItem();
+        item.setCartItemId(UUID.nameUUIDFromBytes(String.valueOf(uniqueIdCounter.incrementAndGet()).getBytes()));
+        item.setMenuId(menuDetails.getMenuId());
+        item.setMenuName(menuDetails.getMenuName());
+        item.setMenuFee(menuDetails.getMenuFee());
+        item.setQuantity(request.getQuantity());
+
+        if (request.getOptions() != null) {
+            for (CartAddItemRequest.OptionDto optReq : request.getOptions()) {
+
+                MenuDetailsDto.OptionValueDto optValueDto = menuDetails.getOptions().stream()
+                        .flatMap(g -> g.getValues().stream())
+                        .filter(v -> v.getMenuOptValueId().equals(optReq.getMenuOptValueId()))
+                        .findFirst()
+                        .orElseThrow(() -> new MenuInfoNotFoundException("옵션 값(ID: " + optReq.getMenuOptValueId() + ") 정보 없음"));
+
+                MenuDetailsDto.OptionGroupDto optGroupDto = menuDetails.getOptions().stream()
+                        .filter(g -> g.getValues().stream().anyMatch(v -> v.getMenuOptValueId().equals(optReq.getMenuOptValueId())))
+                        .findFirst()
+                        .orElseThrow(() -> new MenuInfoNotFoundException("옵션 그룹 정보 없음"));
+
+                CartItemOpt opt = new CartItemOpt();
+                opt.setCartItemOptId(UUID.nameUUIDFromBytes(String.valueOf(uniqueIdCounter.incrementAndGet()).getBytes()));
+                opt.setMenuOptId(optGroupDto.getMenuOptId());
+                opt.setMenuOptName(optGroupDto.getMenuOptName());
+                opt.setMenuOptValueId(optValueDto.getMenuOptValueId());
+                opt.setMenuOptValueName(optValueDto.getValueName());
+                opt.setFee(optValueDto.getFee());
+
+                item.getOptions().add(opt);
+            }
+        }
+        return item;
+    }
+
+    private boolean isSameCartItem(CartItem item1, CartItem item2) {
+        if (!item1.getMenuId().equals(item2.getMenuId()) || item1.getOptions().size() != item2.getOptions().size()) {
+            return false;
+        }
+
+        List<UUID> ids1 = item1.getOptions().stream().map(CartItemOpt::getMenuOptValueId).sorted().collect(Collectors.toList());
+        List<UUID> ids2 = item2.getOptions().stream().map(CartItemOpt::getMenuOptValueId).sorted().collect(Collectors.toList());
+
+        return ids1.equals(ids2);
+    }
+
+    // ------------------------------------------------------------------
+    // 3. 장바구니 비우기
+    // ------------------------------------------------------------------
+    public void clearCart() {
+        String userId = SecurityUtil.getCurrentUserId();
+        cartRepository.deleteByUserId(userId);
+    }
 }

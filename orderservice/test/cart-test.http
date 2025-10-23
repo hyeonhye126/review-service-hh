@@ -1,0 +1,75 @@
+@baseurl = http://localhost:8081
+@baseurl2 = http://localhost:8082
+@customer_user = merong4473
+@customer_password = Test@1234
+@test_menu_id = 9188ff6e-2144-4284-ad42-1e9d99723225
+@test_store_id = 459c5d07-28f0-4828-8772-5e9545415711
+@test_opt_value_id_1 = 5174577b-832f-45a8-8e6c-7e661621528c
+@test_opt_value_id_2 = 12e84d9f-155e-4c74-9f4c-1d93d790757d
+
+
+### 로그인 요청 테스트 (토큰 받기)
+# 이 요청을 먼저 실행하여 토큰을 {{ACCESS_TOKEN}} 변수에 저장해야 합니다.
+POST {{baseurl}}/users/login
+Content-Type: application/json
+
+{
+  "username": "{{customer_user}}",
+  "password": "{{customer_password}}"
+}
+
+> {% client.global.set("ACCESS_TOKEN", response.body.accessToken); %}
+
+
+######################################################################
+### 2. 장바구니 API 테스트 (인증 필요)
+######################################################################
+
+### 2.1. 장바구니에 메뉴 항목 추가 (POST /api/v1/cart)
+# 메뉴 ID와 옵션 ID는 실제 DB에 존재하는 값으로 대체해야 합니다.
+# 이 예시는 옵션 2개를 선택하고 수량 2개를 담는 요청입니다.
+POST {{baseurl2}}/api/v1/cart
+Content-Type: application/json
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+{
+  "menuId": "{{test_menu_id}}",
+  "quantity": 2,
+  "options": [
+    { "menuOptValueId": "{{test_opt_value_id_1}}" },
+    { "menuOptValueId": "{{test_opt_value_id_2}}" }
+  ]
+}
+
+### 2.2. 장바구니 조회 (GET /api/v1/cart)
+GET {{baseurl2}}/api/v1/cart
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+
+### 2.3. 장바구니 항목 추가 (수량 증가 테스트)
+# 2.1과 동일한 메뉴/옵션으로 수량 1개를 추가하여, 기존 항목의 수량이 증가하는지 확인합니다.
+POST {{baseurl2}}/api/v1/cart
+Content-Type: application/json
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+{
+  "menuId": "{{test_menu_id}}",
+  "quantity": 1,
+  "options": [
+    { "menuOptValueId": "{{test_opt_value_id_1}}" },
+    { "menuOptValueId": "{{test_opt_value_id_2}}" }
+  ]
+}
+
+### 2.4. 장바구니 조회 (증가 확인)
+GET {{baseurl2}}/api/v1/cart
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+### 2.5. 장바구니 비우기 (DELETE /api/v1/cart)
+DELETE {{baseurl2}}/api/v1/cart
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+
+### 2.6. 비워진 후 조회 (404 Not Found 기대)
+GET http://localhost:8082/api/v1/cart
+Authorization: Bearer {{ACCESS_TOKEN}}

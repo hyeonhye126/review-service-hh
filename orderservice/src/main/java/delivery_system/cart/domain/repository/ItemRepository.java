@@ -1,11 +1,10 @@
-// src/main/java/delivery_system/cart/domain/repository/ItemRepository.java
 package delivery_system.cart.domain.repository;
 
-import delivery_system.cart.domain.Entity.Item; // ⭐️ Item으로 변경
+import delivery_system.cart.presentation.dto.MenuDetailsDto;
 import java.util.Optional;
 import java.util.UUID;
 
+// 메뉴 정보(가격, 이름, 옵션)를 DB에서 조회하는 역할
 public interface ItemRepository {
-    // ID로 Item 정보와 관련된 옵션 정보까지 한 번에 조회합니다.
-    Optional<Item> findItemWithDetailsById(UUID itemId);
+    Optional<MenuDetailsDto> findMenuDetailsById(UUID menuId);
 }
