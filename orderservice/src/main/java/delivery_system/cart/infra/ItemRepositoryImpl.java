@@ -36,29 +36,31 @@ public class ItemRepositoryImpl implements ItemRepository {
             m.menu_name, 
             m.menu_fee,
             COALESCE(
-                json_agg(
+                (json_agg(
                     jsonb_build_object(
                         'menuOptId', mo.menu_opt_id,
                         'menuOptName', mo.menu_opt_name,
                         'values', (
                             SELECT COALESCE(
-                                json_agg(
+                                (json_agg(
                                     jsonb_build_object(
                                         'menuOptValueId', mov.menu_opt_value_id,
                                         'valueName', mov.menu_opt_value_name,
                                         'fee', mov.menu_opt_value_fee
                                     )
-                                ) FILTER (WHERE mov.menu_opt_value_id IS NOT NULL), '[]'::jsonb
+                                ) FILTER (WHERE mov.menu_opt_value_id IS NOT NULL))::jsonb, -- 🚨 괄호와 ::jsonb로 구문 오류 해결
+                                '[]'::jsonb
                             )
                             FROM p_menu_opt_value mov
                             WHERE mov.menu_opt_id = mo.menu_opt_id AND mov.deleted_at IS NULL AND mov.is_active = TRUE
                         )
                     )
-                ) FILTER (WHERE mo.menu_opt_id IS NOT NULL), '[]'::jsonb
+                ) FILTER (WHERE mo.menu_opt_id IS NOT NULL))::jsonb, -- 🚨 괄호와 ::jsonb로 구문 오류 해결
+                '[]'::jsonb
             ) AS options_json
         FROM p_menu m
         JOIN p_store s ON m.store_id = s.store_id
-        LEFT JOIN p_menu_opt_relation mor ON m.menu_id = mor.menu_id AND mor.deleted_at IS NULL AND mor.is_active = TRUE
+        LEFT JOIN p_menu_opt_relation mor ON m.menu_id = mor.menu_id AND mor.is_active = TRUE -- mor.deleted_at 제거
         LEFT JOIN p_menu_opt mo ON mor.menu_opt_id = mo.menu_opt_id AND mo.deleted_at IS NULL AND mo.is_active = TRUE
         WHERE m.menu_id = ? AND m.deleted_at IS NULL AND m.is_hidden = FALSE
         GROUP BY m.menu_id, s.store_name, s.delivery_fee
@@ -104,4 +106,6 @@ public class ItemRepositoryImpl implements ItemRepository {
             return Optional.empty();
         }
     }
+
+    // ItemRepository 인터페이스의 다른 메서드가 있다면 여기에 구현해야 합니다.
 }

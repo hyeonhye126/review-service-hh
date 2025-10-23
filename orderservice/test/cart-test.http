@@ -2,10 +2,10 @@
 @baseurl2 = http://localhost:8082
 @customer_user = merong4473
 @customer_password = Test@1234
-@test_menu_id = 9188ff6e-2144-4284-ad42-1e9d99723225
+@test_menu_id = ea64c59c-59b1-4905-9cb6-559837456f74
 @test_store_id = 459c5d07-28f0-4828-8772-5e9545415711
-@test_opt_value_id_1 = 5174577b-832f-45a8-8e6c-7e661621528c
-@test_opt_value_id_2 = 12e84d9f-155e-4c74-9f4c-1d93d790757d
+@test_opt_value_id_1 = d02954ed-6beb-4fd1-bf3f-ea17fb1fd53f
+@test_opt_value_id_2 = 8105cf4c-54c1-4130-a96f-86f48b24c99b
 
 
 ### 로그인 요청 테스트 (토큰 받기)
@@ -42,7 +42,7 @@ Authorization: Bearer {{ACCESS_TOKEN}}
 }
 
 ### 2.2. 장바구니 조회 (GET /api/v1/cart)
-GET {{baseurl2}}/api/v1/cart
+GET http://localhost:8082/api/v1/cart/api/v1/cart
 Authorization: Bearer {{ACCESS_TOKEN}}
 
 
