@@ -4,12 +4,22 @@ server:
 spring:
   application:
     name: reviewservice
+
+  # 데이터베이스 설정
+  datasource:
+    url: jdbc:postgresql://localhost:5432/test-db
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+
 ---
 spring:
   config:
     activate:
       on-profile: default
   jpa:
+    hibernate:
+      ddl-auto: validate
     properties:
       hibernate:
         show_sql: true
@@ -39,8 +49,12 @@ spring:
 
 logging:
   level:
+    org.springframework.security: DEBUG
+    delivery_system: INFO
     org.hibernate.type: trace
     org.springframework.cloud: debug
+    org.springframework.jdbc.core: debug
+    org.hibernate.SQL: debug
 
 ---
 
