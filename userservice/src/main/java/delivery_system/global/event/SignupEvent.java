@@ -1,6 +1,6 @@
 package delivery_system.global.event;
 
-import delivery_system.user.domain.entity.User;
+import delivery_system.user.domain.entity.UserEntity;
 import delivery_system.user.domain.entity.UserRole;
 import lombok.Data;
 import lombok.ToString;
@@ -14,11 +14,11 @@ public class SignupEvent extends AbstractEvent {
     private String address;
     private UserRole role;
 
-    public SignupEvent(User user) {
-        this.user_id = user.getId();
-        this.password = user.getPassword();
+    public SignupEvent(UserEntity userEntity) {
+        this.user_id = userEntity.getId();
+        this.password = userEntity.getPassword();
         //this.address = user.getAddress();
-        this.role = user.getRole();
+        this.role = userEntity.getRole();
     }
     public SignupEvent() {
         super();

@@ -1,14 +1,16 @@
 package delivery_system.store.presentation.controller;
 
 
-import delivery_system.global.infra.dto.CategoryCreateRequest;
 import delivery_system.store.application.service.StoreService;
 import delivery_system.store.presentation.dto.request.ReqCreateStoreDtoV1;
+import delivery_system.store.presentation.dto.request.ReqUpdateStoreDtoV1;
 import delivery_system.store.presentation.dto.response.ResGetStoreByIdDtoV1;
 import delivery_system.store.presentation.dto.response.ResGetStoresDtoV1;
 import delivery_system.store.presentation.dto.response.ResCreateStoreDtoV1;
+import delivery_system.store.presentation.dto.response.ResUpdatedStoreDtoV1;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +59,15 @@ public class StoreController {
     }
 
     //가게 수정
-    @PutMapping("/update")
+    @PutMapping("/update/{store_id}")
     @PreAuthorize("hasRole('MANAGER')")
-    public
+    public ResponseEntity<ResUpdatedStoreDtoV1> updateStoreById(
+            @PathVariable UUID store_id,
+            @Valid @RequestBody ReqUpdateStoreDtoV1 reqUpdateStoreDtoV1
+    ) {
+        log.info("update store ====> {}", reqUpdateStoreDtoV1  );
+        ResUpdatedStoreDtoV1 stores = storeService.updateStore(store_id, reqUpdateStoreDtoV1);
+        return ResponseEntity.ok(stores);
+    }
+
 }

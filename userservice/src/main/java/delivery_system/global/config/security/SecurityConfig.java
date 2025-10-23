@@ -53,6 +53,7 @@ public class SecurityConfig {
 
                         // (인증이 필요한 경로)
                         .requestMatchers("/categories/**").authenticated()
+                        .requestMatchers("/admin/**").authenticated()
                         .requestMatchers("/stores/**").authenticated() // ⬅️ 가게 API도 추가
 
                         // (그 외 모든 경로는 인증 필요 - 항상 마지막에!)
