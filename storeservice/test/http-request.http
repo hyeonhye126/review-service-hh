@@ -34,7 +34,7 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "category_name": "치킨"
+  "category_name": "중식"
 }
 
 ### 4. 카테고리 목록 조회 (테스트용)
@@ -42,7 +42,33 @@ Authorization: Bearer {{auth_token}}
 # 이 API는 토큰이 필요 없습니다. (CategoryController 설정에 따름)
 GET http://localhost:8083/categories
 Accept: application/json
+Authorization: Bearer {{auth_token}}
 
 ### 5. 가게 목록 조회 (테스트용)
 GET http://localhost:8083/stores
 Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### 6. 가게 상세 조회 (테스트용)
+GET http://localhost:8083/stores/b989eec9-4dbe-4f50-ac48-bd33353cfe40
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### 7. 가게 등록 (테스트용)
+POST http://localhost:8083/stores/create
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "store_name": "우렬이네",
+  "owner_id": "asfdasdㅁㅁㅁㅁ",
+  "store_address": "서울 강남구 역삼동 646-15",
+  "description": "아주 맛있는 치킨집",
+  "store_rating_avg": 0,
+  "store_review_count": 0
+}
+
+###8. 가게 수정(테스트용)
+PUT http://localhost:8083/stores/update
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}

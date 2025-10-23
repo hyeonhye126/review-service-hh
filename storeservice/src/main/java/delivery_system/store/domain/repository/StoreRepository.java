@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface StoreRepository extends JpaRepository<StoreEntity, UUID> {
     List<StoreEntity> findAllByDeletedAtIsNull();
+    StoreEntity findStoreByStoreId(UUID storeId);
 }

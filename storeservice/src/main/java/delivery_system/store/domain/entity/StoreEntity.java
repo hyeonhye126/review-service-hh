@@ -1,28 +1,26 @@
 package delivery_system.store.domain.entity;
 
-import java.text.DecimalFormat;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import delivery_system.store.domain.repository.StoreRepository;
 import jakarta.persistence.*;
 import lombok.Data;
-import delivery_system.StoreserviceApplication;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.locationtech.jts.geom.Point;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
-@Table(name = "Store_table")
+@Table(name = "p_store")
 @Data
 public class StoreEntity {
 
     @Id
     @Column(name = "store_id", columnDefinition = "uuid", updatable = false, nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID store_id; //가게 식별자
+    private UUID storeId; //가게 식별자
 
     @Column(name = "owner_id", nullable = false)
-    private String owner_id; //점주식별자
+    private String ownerId; //점주식별자
 
     @Column(name = "store_name", nullable = false)
     private String storeName; //가게명
@@ -37,10 +35,10 @@ public class StoreEntity {
     private String storeAddress; //주소 원문
 
     @Column(name = "store_geom")
-    private String storeGeom; //주소 좌표
+    private Point storeGeom; //주소 좌표
 
     @Column(name = "store_rating_avg", nullable = false)
-    private DecimalFormat storeRatingAvg; //평균 평점
+    private Double storeRatingAvg; //평균 평점
 
     @Column(name = "store_review_count", nullable = false)
     private Integer storeReviewCount; //리뷰 갯수
