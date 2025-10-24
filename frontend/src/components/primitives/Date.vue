@@ -288,7 +288,7 @@ onMounted(() => {
     text-align: center;
     cursor: pointer;
     border-radius: 4px;
-    user-select: none; /* 텍스트 선택 방지 */
+    userEntity-select: none; /* 텍스트 선택 방지 */
 }
 
 .date-cell:hover {

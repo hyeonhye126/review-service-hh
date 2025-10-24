@@ -50,20 +50,21 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {try {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        try {
         // ✅ [수정] 반환 타입이 String -> TokenResponseDto
         TokenResponse tokenDto = userService.login(request.getUsername(), request.getPassword());
 
         // ✅ [수정] DTO 객체를 그대로 반환 (JSON으로 직렬화됨)
         return ResponseEntity.ok(tokenDto);
 
-    } catch (IllegalArgumentException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", e.getMessage()));
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "로그인 처리 중 오류가 발생했습니다."));
-    }
+        }
     }
 }
 //>>> Clean Arch / Inbound Adaptor

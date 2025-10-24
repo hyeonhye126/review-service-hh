@@ -1,7 +1,7 @@
 <template>
     <div style="margin: 13px 0 -15px 0">
-        <v-card-title  v-if="inList && user.name && user.userId" style="font-size: 15px;">
-            UserName: {{user.name}}, Id: {{ user.userId }}
+        <v-card-title  v-if="inList && userEntity.name && userEntity.userId" style="font-size: 15px;">
+            UserName: {{userEntity.name}}, Id: {{ userEntity.userId }}
         </v-card-title>
         <v-card-title  v-if="!inList">
             Your Profile
@@ -28,24 +28,24 @@
             </v-col>
         </v-card-title>
 
-        <v-card-text v-if="user">
+        <v-card-text v-if="userEntity">
             <div v-if="editMode">
-                <v-text-field label="Id" v-model="user.userId"/>
+                <v-text-field label="Id" v-model="userEntity.userId"/>
             </div>
             <div v-if="editMode" style="margin-top: 5px;">
-                <v-text-field label="Password" v-model="user.password"/>
+                <v-text-field label="Password" v-model="userEntity.password"/>
             </div>
             <div v-if="editMode" style="margin-top: 5px;">
-                <v-text-field label="Name" v-model="user.name"/>
+                <v-text-field label="Name" v-model="userEntity.name"/>
             </div>
             <div v-if="editMode" style="margin-top: 5px;">
-                <v-text-field label="Email" v-model="user.email"/>
+                <v-text-field label="Email" v-model="userEntity.email"/>
             </div>
             <div v-if="editMode" style="margin-top: 5px;">
-                <v-text-field label="Address" v-model="user.address"/>
+                <v-text-field label="Address" v-model="userEntity.address"/>
             </div>
             <div v-if="editMode" style="margin-top: 5px;">
-                <v-text-field label="Phone" v-model="user.phone"/>
+                <v-text-field label="Phone" v-model="userEntity.phone"/>
             </div>
             <div v-if="!editMode" style="margin-top: 5px;">
                 <v-card
@@ -62,7 +62,7 @@
                         <v-col class="py-0">
                             <v-avatar width="120" height="120" color="white" style="margin: 15px 0 -5px 40px;">
                                 <v-img
-                                    :src="user.profileImg ? user.profileImg:'https://user-images.githubusercontent.com/92732781/174538537-631a0ee2-40bb-4589-a58b-67da0ef17e38.png'"
+                                    :src="userEntity.profileImg ? userEntity.profileImg:'https://userEntity-images.githubusercontent.com/92732781/174538537-631a0ee2-40bb-4589-a58b-67da0ef17e38.png'"
                                     class="mx-auto"
                                 ></v-img>
                             </v-avatar>
@@ -97,7 +97,7 @@
                         <v-col class="py-0">
                         <v-avatar color="white" style="margin: 15px 0 -5px 15px;">
                             <v-img
-                                :src="user.profileImg ? user.profileImg:'https://user-images.githubusercontent.com/92732781/174538537-631a0ee2-40bb-4589-a58b-67da0ef17e38.png'"
+                                :src="userEntity.profileImg ? userEntity.profileImg:'https://userEntity-images.githubusercontent.com/92732781/174538537-631a0ee2-40bb-4589-a58b-67da0ef17e38.png'"
                                 class="mx-auto"
                             ></v-img>
                         </v-avatar>
@@ -136,12 +136,12 @@
         },
         data: () => ({
             avatarMode : false,
-            user:{}
+            userEntity:{}
         }),
         created(){
-            this.user = this.modelValue
-            if(!this.user) {
-                this.user = {
+            this.userEntity = this.modelValue
+            if(!this.userEntity) {
+                this.userEntity = {
                     'userId': '',
                     'password': '',
                     'name': '',
@@ -152,7 +152,7 @@
             }
         },
         watch: {
-            user(newVal) {
+            userEntity(newVal) {
                 this.$emit('update:modelValue', newVal);
             },
         },

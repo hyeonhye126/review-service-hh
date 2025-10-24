@@ -19,7 +19,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "p_user") // ✅ 실제 테이블명
-public class User {
+public class UserEntity {
     @Id
     @Column(name = "user_id",unique = true, length = 50)
     private String userId; // ✅ String 타입

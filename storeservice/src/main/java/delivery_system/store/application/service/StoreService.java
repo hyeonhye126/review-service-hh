@@ -3,13 +3,14 @@ package delivery_system.store.application.service;
 import delivery_system.store.domain.entity.StoreEntity;
 import delivery_system.store.domain.repository.StoreRepository;
 import delivery_system.store.presentation.dto.request.ReqCreateStoreDtoV1;
+import delivery_system.store.presentation.dto.request.ReqUpdateStoreDtoV1;
 import delivery_system.store.presentation.dto.response.ResCreateStoreDtoV1;
 import delivery_system.store.presentation.dto.response.ResGetStoreByIdDtoV1;
 import delivery_system.store.presentation.dto.response.ResGetStoresDtoV1;
+import delivery_system.store.presentation.dto.response.ResUpdatedStoreDtoV1;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private static final Logger log = LoggerFactory.getLogger(StoreService.class);
 
+    // 스토어 전체 정보 조회
     public List<ResGetStoresDtoV1> findAll() {
         log.debug("스토어 정보 조회");
         return storeRepository.findAllByDeletedAtIsNull().stream()
@@ -32,12 +34,14 @@ public class StoreService {
                 .collect(Collectors.toList());
     }
 
+    // 스토어 상세 정보 조회
     public ResGetStoreByIdDtoV1 findByStoreId(UUID storeId) {
         log.debug("storeId ====> {}",  storeId);
         StoreEntity storeEntity = storeRepository.findStoreByStoreId(storeId);
         return convertToStore(storeEntity);
     }
 
+    // 스토어 신규 등록
     public ResCreateStoreDtoV1 createStore(ReqCreateStoreDtoV1 reqCreateStoreDtoV1) {
         StoreEntity storeEntity = new StoreEntity();
         storeEntity.setStoreName(reqCreateStoreDtoV1.getStoreName());
@@ -50,6 +54,32 @@ public class StoreService {
         StoreEntity savedStoreEntity = storeRepository.save(storeEntity);
 
         return convertToCreatedStore(savedStoreEntity);
+    }
+
+    // 스토어 정보 수정
+    public ResUpdatedStoreDtoV1 updateStore(UUID storeId,  ReqUpdateStoreDtoV1 reqUpdateStoreDtoV1) {
+        log.debug("storeId ====> {}",  storeId);
+        StoreEntity storeEntity = storeRepository.findStoreByStoreId(storeId);
+
+        if (reqUpdateStoreDtoV1.getStoreAddress() != null) {
+            storeEntity.setStoreAddress(reqUpdateStoreDtoV1.getStoreAddress());
+        }
+        if (reqUpdateStoreDtoV1.getStoreName() != null) {
+            storeEntity.setStoreName(reqUpdateStoreDtoV1.getStoreName());
+        }
+        if (reqUpdateStoreDtoV1.getDescription() != null) {
+            storeEntity.setDescription(reqUpdateStoreDtoV1.getDescription());
+        }
+        return convertToUpdatedStore(storeEntity);
+    }
+
+    private ResUpdatedStoreDtoV1 convertToUpdatedStore(StoreEntity storeEntity) {
+        ResUpdatedStoreDtoV1 response = new ResUpdatedStoreDtoV1();
+        log.info(response.toString());
+        // ✅ [수정] getCategoryId() -> getCatId()로 통일
+        response.setStore_id(storeEntity.getStoreId());
+
+        return response;
     }
 
     private ResCreateStoreDtoV1 convertToCreatedStore(StoreEntity storeEntity) {

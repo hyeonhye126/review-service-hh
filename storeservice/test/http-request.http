@@ -1,13 +1,13 @@
-### 1. MANAGER 회원가입
+### 1. MASTER 회원가입
 # 먼저 'manager-test'라는 ID로 MANAGER 계정을 생성합니다.
 POST http://localhost:8081/users/signup
 Content-Type: application/json
 
 {
-  "username": "managertest4473",
-  "password": "Manager@1234",
+  "username": "master1",
+  "password": "Master@1234",
   "address": "서울특별시 강남구 테헤란로 212",
-  "role": "MANAGER"
+  "role": "MASTER"
 }
 
 ### 2. MANAGER 로그인 (토큰 획득)
@@ -68,7 +68,11 @@ Authorization: Bearer {{auth_token}}
   "store_review_count": 0
 }
 
-###8. 가게 수정(테스트용)
-PUT http://localhost:8083/stores/update
+### 8. 가게 수정(테스트용)
+PUT http://localhost:8083/stores/update/6ef796ee-28cd-4284-98bc-860ba26df4bc
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
+
+{
+  "description": "맛있는 치킨"
+}
