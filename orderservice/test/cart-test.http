@@ -1,0 +1,102 @@
+@baseurl = http://localhost:8081
+@baseurl2 = http://localhost:8082
+@customer_user = merong4473
+@customer_password = Test@1234
+@test_menu_id = ea64c59c-59b1-4905-9cb6-559837456f74
+@test_store_id = 459c5d07-28f0-4828-8772-5e9545415711
+@test_opt_value_id_1 = d02954ed-6beb-4fd1-bf3f-ea17fb1fd53f
+@test_opt_value_id_2 = 8105cf4c-54c1-4130-a96f-86f48b24c99b
+
+
+### 로그인 요청 테스트 (토큰 받기)
+# 이 요청을 먼저 실행하여 토큰을 {{ACCESS_TOKEN}} 변수에 저장해야 합니다.
+POST {{baseurl}}/users/login
+Content-Type: application/json
+
+{
+  "username": "{{customer_user}}",
+  "password": "{{customer_password}}"
+}
+
+> {% client.global.set("ACCESS_TOKEN", response.body.accessToken); %}
+
+
+######################################################################
+### 2. 장바구니 API 테스트 (인증 필요)
+######################################################################
+
+### 2.1. 장바구니에 메뉴 항목 추가 (POST /api/v1/cart)
+# 💡 [오늘의 추가 기능 테스트 시작] 일반배달(false), 요청사항과 함께 메뉴 추가
+POST {{baseurl2}}/api/v1/cart
+Content-Type: application/json
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+{
+  "menuId": "{{test_menu_id}}",
+  "quantity": 2,
+  "options": [
+    { "menuOptValueId": "{{test_opt_value_id_1}}" },
+    { "menuOptValueId": "{{test_opt_value_id_2}}" }
+  ],
+  "isSingleDelivery": false,
+  "ownerRequest": "문 앞에 두고 연락주세요.",
+  "partnerRequest": "천천히 안전하게 오세요."
+}
+
+### 2.2. 장바구니 조회 (GET /api/v1/cart)
+# 💡 조회 시, 주소가 반영되고 isAblePay가 검증되어 응답에 포함되는지 확인합니다.
+GET {{baseurl2}}/api/v1/cart
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+### 2.3. 장바구니 항목 추가 (수량 증가 테스트 - 기존 로직)
+POST {{baseurl2}}/api/v1/cart
+Content-Type: application/json
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+{
+  "menuId": "{{test_menu_id}}",
+  "quantity": 1,
+  "options": [
+    { "menuOptValueId": "{{test_opt_value_id_1}}" },
+    { "menuOptValueId": "{{test_opt_value_id_2}}" }
+  ]
+}
+
+### 2.4. 장바구니 조회 (증가 확인)
+GET {{baseurl2}}/api/v1/cart
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+---
+### 2.7. 장바구니 속성 수정 (PATCH /api/v1/cart)
+# 💡 일반배달(false)에서 한집배달(true)로 변경하고, 요청사항을 수정합니다.
+# 💡 finalTotalFee가 1000원 증가했는지 확인하세요.
+PATCH {{baseurl2}}/api/v1/cart
+Content-Type: application/json
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+{
+  "isSingleDelivery": true,
+  "ownerRequest": "주문 변경 없으니 빨리 만들어주세요!",
+  "partnerRequest": "오늘은 엘리베이터를 이용해주세요."
+}
+
+### 2.8. 장바구니 조회 (PATCH 결과 확인)
+# 💡 isSingleDelivery가 true이고, 요청사항이 변경되었으며, finalTotalFee가 증가했는지 확인합니다.
+GET {{baseurl2}}/api/v1/cart
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+---
+### 2.9. 결제 완료 처리 테스트 (POST /api/v1/cart/checkout/success)
+# 💡 이 요청은 장바구니를 '결제완료' 상태로 바꾸고, Redis에서 장바구니를 삭제해야 합니다.
+POST {{baseurl2}}/api/v1/cart/checkout/success
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+### 2.10. 결제 후 장바구니 조회 (404 Not Found 기대)
+# 💡 2.9 요청으로 장바구니가 삭제되었으므로 404 응답을 기대합니다.
+GET {{baseurl2}}/api/v1/cart
+Authorization: Bearer {{ACCESS_TOKEN}}
+
+---
+### 2.11. 재테스트를 위해 장바구니 비우기 (필요 시 주석 해제)
+# DELETE {{baseurl2}}/api/v1/cart
+# Authorization: Bearer {{ACCESS_TOKEN}}

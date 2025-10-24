@@ -10,7 +10,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class AuthRedisConfig {
     @Bean
     public LettuceConnectionFactory authRedisConnectionFactory() {
-        LettuceConnectionFactory factory = new LettuceConnectionFactory("localhost", 6379);
+        LettuceConnectionFactory factory = new LettuceConnectionFactory("ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com", 6379);
         factory.setDatabase(0); // ✅ 인증용 Redis (DB 0) index 0임
         return factory;
     }
