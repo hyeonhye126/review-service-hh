@@ -1,7 +1,5 @@
 package delivery_system.store.presentation.controller;
 
-
-import delivery_system.global.infra.dto.CategoryCreateRequest;
 import delivery_system.store.application.service.StoreService;
 import delivery_system.store.presentation.dto.request.ReqCreateStoreDtoV1;
 import delivery_system.store.presentation.dto.response.ResGetStoreByIdDtoV1;
@@ -55,9 +53,4 @@ public class StoreController {
         ResCreateStoreDtoV1 resCreateStoreDtoV1 = storeService.createStore(reqCreateStoreDtoV1);
         return ResponseEntity.status(HttpStatus.CREATED).body(resCreateStoreDtoV1);
     }
-
-    //가게 수정
-    @PutMapping("/update")
-    @PreAuthorize("hasRole('MANAGER')")
-    public
 }
