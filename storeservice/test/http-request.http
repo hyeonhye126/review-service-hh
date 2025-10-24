@@ -34,7 +34,7 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "category_name": "중식"
+  "category_name": "한식"
 }
 
 ### 4. 카테고리 목록 조회 (테스트용)
