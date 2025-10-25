@@ -5,15 +5,15 @@ spring:
   application:
     name: userservice
 
-#  data:
-#    redis:
-#      host: localhost
-#      port: 6379
-#      database: 0
+  data:
+    redis:
+      host: ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com
+      port: 6379
+      database: 0
 
   datasource:
-#    url: jdbc:postgresql://localhost:5432/userservice
-    url: jdbc:postgresql://localhost:5432/test-db  # ✅ 변경됨
+#    url: jdbc:postgresql://ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com:5432/userservice
+    url: jdbc:postgresql://ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com:5432/test-db  # ✅ 변경됨
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
@@ -85,3 +85,5 @@ logging:
     # 3. 추가적으로 DB 관련 쿼리 로깅을 INFO 레벨로 보고 싶다면 (옵션)
     org.springframework.jdbc.core: debug
     org.hibernate.SQL: debug
+    org.springframework.transaction: TRACE
+    org.hibernate.engine.transaction: TRACE

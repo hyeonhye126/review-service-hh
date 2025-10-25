@@ -106,9 +106,21 @@ POST http://localhost:8081/users/login
 Content-Type: application/json
 
 {
-  "username": "merong4473",
-  "password": "Test@1234"
+  "username": "master1",
+  "password": "Master@1234"
 }
 
-### MANAGER 권한으로서 카테고리 등록(+token 넣어야 함)
+> {%
+    // 응답 받은 JSON에서 accessToken을 추출하여 'auth_token' 변수에 저장
+    client.global.set("auth_token", response.body.accessToken);
+%}
+
+### 유저 권한 변경
+PUT http://localhost:8081/admin/role/update/jinju1111737
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "role": "CUSTOMER"
+}
 
