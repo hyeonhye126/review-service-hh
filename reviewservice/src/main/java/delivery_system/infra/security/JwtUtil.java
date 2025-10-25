@@ -1,25 +1,23 @@
 package delivery_system.infra.security;
 
-import delivery_system.domain.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.function.Function;
 
 /**
- * JWT 검증 유틸
- * UserService에서 발급한 토큰을 검증하고 userId를 추출합니다.
- * ReviewService에서는 검증 기능만 사용합니다.
+ * JWT 검증 유틸리티
+ * UserService에서 발급한 토큰을 검증하고 사용자 정보를 추출합니다.
  */
 @Component
 public class JwtUtil {
 
-    private final Key SECRET_KEY;
+    private final SecretKey SECRET_KEY;
 
     public JwtUtil(@Value("${jwt.secret}") String secret) {
         this.SECRET_KEY = Keys.hmacShaKeyFor(secret.getBytes());
@@ -27,7 +25,7 @@ public class JwtUtil {
     }
 
     /**
-     * 토큰에서 userId(subject) 추출
+     * 토큰에서 userId 추출
      */
     public String getUserIdFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -41,21 +39,25 @@ public class JwtUtil {
     }
 
     /**
-     * 토큰의 만료 여부 확인
+     * 토큰 만료 여부 확인
      */
     public Boolean isTokenExpired(String token) {
-        return getExpirationDateFromToken(token).before(new Date());
+        try {
+            return getExpirationDateFromToken(token).before(new Date());
+        } catch (Exception e) {
+            return true;
+        }
     }
 
     /**
-     * 토큰 유효성 검증 (만료 시간만 확인)
+     * 토큰 유효성 검증
      */
     public Boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(SECRET_KEY)
+            Jwts.parser()
+                    .verifyWith(SECRET_KEY)
                     .build()
-                    .parseClaimsJws(token);
+                    .parseSignedClaims(token);
             return !isTokenExpired(token);
         } catch (Exception e) {
             System.out.println("❌ JWT 검증 실패: " + e.getMessage());
@@ -67,8 +69,12 @@ public class JwtUtil {
      * 토큰 유효성 검증 (userId 포함)
      */
     public Boolean validateToken(String token, String userId) {
-        final String extractedUserId = getUserIdFromToken(token);
-        return (extractedUserId.equals(userId) && !isTokenExpired(token));
+        try {
+            final String extractedUserId = getUserIdFromToken(token);
+            return (extractedUserId.equals(userId) && !isTokenExpired(token));
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     // ================= 내부 유틸 메서드 =================
@@ -83,10 +89,10 @@ public class JwtUtil {
     }
 
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
+        return Jwts.parser()
+                .verifyWith(SECRET_KEY)
                 .build()
-                .parseClaimsJws(token)
-                .getBody();
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

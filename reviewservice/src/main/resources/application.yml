@@ -6,8 +6,21 @@ spring:
     name: reviewservice
 
   # 데이터베이스 설정
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/test-db
+#    driver-class-name: org.postgresql.Driver
+#    username: postgres
+#    password: postgres
+
+  data:
+    redis:
+      host: ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com
+      port: 6379
+      database: 0
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/test-db
+    #    url: jdbc:postgresql://ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com:5432/userservice
+    url: jdbc:postgresql://ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com:5432/test-db  # ✅ 변경됨
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
@@ -19,7 +32,7 @@ spring:
       on-profile: default
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
@@ -67,6 +80,8 @@ spring:
     activate:
       on-profile: docker
   jpa:
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
