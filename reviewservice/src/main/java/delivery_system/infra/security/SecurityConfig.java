@@ -13,6 +13,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 /**
  * ReviewService Security 설정
+ *
+ * 공개 API (인증 불필요):
+ * - GET /api/v1/reviews/store/{storeId} - 가게의 리뷰 목록 조회
+ * - GET /api/v1/reviews/order/{orderId} - 주문의 리뷰 조회
+ *
+ * 인증 필요 API:
+ * - POST /api/v1/reviews/{storeId}/orders/{orderId} - 리뷰 작성
+ * - GET /api/v1/reviews - 내 리뷰 목록 조회
+ * - PUT /api/v1/reviews/{reviewId} - 리뷰 수정 (작성자만)
+ * - DELETE /api/v1/reviews/{reviewId} - 리뷰 삭제 (CUSTOMER/MANAGER/MASTER)
  */
 @Configuration
 @EnableWebSecurity
@@ -29,6 +39,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // 🟢 공개 API (인증 불필요)
                         .requestMatchers(
                                 "/actuator/health",
                                 "/swagger-ui/**",
@@ -37,8 +48,10 @@ public class SecurityConfig {
                                 "/api/v1/reviews/store/**",
                                 "/api/v1/reviews/order/**"
                         ).permitAll()
+                        // 🔐 나머지 API는 인증 필요
                         .anyRequest().authenticated()
                 )
+                // JWT 필터 추가
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

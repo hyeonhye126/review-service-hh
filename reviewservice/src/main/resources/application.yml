@@ -5,31 +5,21 @@ spring:
   application:
     name: reviewservice
 
-  # 데이터베이스 설정
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/test-db
-#    driver-class-name: org.postgresql.Driver
-#    username: postgres
-#    password: postgres
+  # 데이터베이스 설정 (최상위 레벨)
+  datasource:
+    url: jdbc:postgresql://ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com:5432/test-db
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
 
+  # Redis 설정 (최상위 레벨)
   data:
     redis:
       host: ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com
       port: 6379
       database: 0
 
-  datasource:
-    #    url: jdbc:postgresql://ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com:5432/userservice
-    url: jdbc:postgresql://ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com:5432/test-db  # ✅ 변경됨
-    driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: postgres
-
----
-spring:
-  config:
-    activate:
-      on-profile: default
+  # JPA 설정 (최상위 레벨) ⭐ 여기가 핵심!
   jpa:
     hibernate:
       ddl-auto: update
@@ -38,6 +28,9 @@ spring:
         show_sql: true
         format_sql: true
         implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # Kafka 설정 (프로필별로 분리)
   cloud:
     stream:
       kafka:
@@ -60,10 +53,12 @@ spring:
           destination: untitled
           contentType: application/json
 
+# JWT 설정 (최상위 레벨)
 jwt:
   secret: ${JWT_SECRET_KEY:my-default-secret7e9f3b4c5d7c5d8e4f12a9ec17f1f4d29c6b1f8a2}
   expiration: 3600000
 
+# 로깅 설정 (최상위 레벨)
 logging:
   level:
     org.springframework.security: DEBUG
@@ -75,36 +70,16 @@ logging:
 
 ---
 
+# Docker 프로필 전용 설정
 spring:
   config:
     activate:
       on-profile: docker
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
-        implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
   cloud:
     stream:
       kafka:
         binder:
           brokers: my-kafka:9092
-        streams:
-          binder:
-            configuration:
-              default:
-                key:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-                value:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       bindings:
-        event-in:
-          group: reviewservice
-          destination: delivery_system
-          contentType: application/json
         event-out:
-          destination: untitled
-          contentType: application/json
+          destination: delivery_system
