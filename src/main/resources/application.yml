@@ -2,6 +2,8 @@ server:
   port: 8084
 
 spring:
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: reviewservice
 
@@ -58,16 +60,34 @@ jwt:
   secret: ${JWT_SECRET_KEY:my-default-secret7e9f3b4c5d7c5d8e4f12a9ec17f1f4d29c6b1f8a2}
   expiration: 3600000
 
+management:
+  tracing:
+    sampling:
+      # 모든 요청을 트레이싱하려면 1.0으로 설정합니다.
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com:9411/api/v2/spans
+  endpoints:
+    web:
+      exposure:
+        # 트레이싱과 관련된 actuator 엔드포인트도 노출합니다.
+        include: health,info,metrics,prometheus,env,beans,loggers,conditions,httptrace,threaddump,zipkin
+
 # 로깅 설정 (최상위 레벨)
 logging:
   level:
+    io.zipkin.reporter2: DEBUG
     org.springframework.security: DEBUG
     delivery_system: INFO
     org.hibernate.type: trace
     org.springframework.cloud: debug
     org.springframework.jdbc.core: debug
     org.hibernate.SQL: debug
-
+    org.springframework.transaction: TRACE
+    org.hibernate.engine.transaction: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [%thread] [%-40.40logger{39}] [%X{traceId},%X{spanId}] : %m%n"
 ---
 
 # Docker 프로필 전용 설정
