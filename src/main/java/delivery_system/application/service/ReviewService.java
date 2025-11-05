@@ -1,12 +1,12 @@
-package delivery_system.infra.service;
+package delivery_system.application.service;
 
 import delivery_system.domain.Review;
 import delivery_system.domain.ReviewRepository;
 import delivery_system.infra.dto.request.CreateReviewRequest;
 import delivery_system.infra.dto.request.UpdateReviewRequest;
 import delivery_system.infra.dto.response.ReviewResponse;
-import delivery_system.infra.exception.ReviewException;
 import delivery_system.infra.security.SecurityUtil;
+import delivery_system.global.exception.review.ReviewException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,20 +33,12 @@ public class ReviewService {
      */
     public ReviewResponse create(UUID orderId, UUID storeId, String customerId,
                                  CreateReviewRequest request) {
-        // 1️⃣ 주문 ID 및 고객 ID 검증
-        if (orderId == null || customerId == null) {
-            throw new ReviewException("주문 ID와 고객 ID는 필수입니다", HttpStatus.BAD_REQUEST);
-        }
 
-        // 2️⃣ 같은 주문으로 이미 리뷰를 작성했는지 확인
+        // HttpStatus 제거 - message만 던짐
         if (reviewRepository.existsByOrderIdAndDeletedAtIsNull(orderId)) {
-            throw new ReviewException(
-                    "이미 작성된 리뷰가 존재합니다",
-                    HttpStatus.CONFLICT
-            );
+            throw new ReviewException("이미 작성된 리뷰가 존재합니다");
         }
 
-        // 3️⃣ 리뷰 생성 및 저장
         Review review = Review.create(
                 orderId,
                 storeId,
@@ -67,20 +59,12 @@ public class ReviewService {
      * 특정 주문의 리뷰 조회
      */
     public ReviewResponse getByOrder(UUID orderId) {
-        if (orderId == null) {
-            throw new ReviewException("주문 ID는 필수입니다", HttpStatus.BAD_REQUEST);
-        }
-
         Review review = reviewRepository
                 .findByOrderIdAndDeletedAtIsNull(orderId)
-                .orElseThrow(() -> new ReviewException(
-                        "리뷰를 찾을 수 없습니다",
-                        HttpStatus.NOT_FOUND
-                ));
+                .orElseThrow(() -> new ReviewException("리뷰를 찾을 수 없습니다"));
 
         return toResponse(review);
     }
-
 
     /**
      * 특정 가게의 리뷰 페이징 조회
@@ -88,10 +72,6 @@ public class ReviewService {
      * - 최신순 정렬
      */
     public Page<ReviewResponse> listByStore(UUID storeId, Pageable pageable) {
-        if (storeId == null) {
-            throw new ReviewException("가게 ID는 필수입니다", HttpStatus.BAD_REQUEST);
-        }
-
         Page<Review> reviews = reviewRepository
                 .findByStoreIdAndDeletedAtIsNull(storeId, pageable);
 
@@ -102,10 +82,6 @@ public class ReviewService {
      * 특정 고객의 리뷰 페이징 조회 (인증 필요)
      */
     public Page<ReviewResponse> listByCustomer(String customerId, Pageable pageable) {
-        if (customerId == null || customerId.isEmpty()) {
-            throw new ReviewException("고객 ID는 필수입니다", HttpStatus.BAD_REQUEST);
-        }
-
         Page<Review> reviews = reviewRepository
                 .findByCustomerIdAndDeletedAtIsNull(customerId, pageable);
 
@@ -119,30 +95,16 @@ public class ReviewService {
      */
     public ReviewResponse update(UUID reviewId, String customerId,
                                  UpdateReviewRequest request) {
-        if (reviewId == null) {
-            throw new ReviewException("리뷰 ID는 필수입니다", HttpStatus.BAD_REQUEST);
-        }
 
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ReviewException(
-                        "리뷰를 찾을 수 없습니다",
-                        HttpStatus.NOT_FOUND
-                ));
+                .orElseThrow(() -> new ReviewException("리뷰를 찾을 수 없습니다"));
 
-        // ❌ 삭제된 리뷰 확인
         if (review.getDeletedAt() != null) {
-            throw new ReviewException(
-                    "삭제된 리뷰는 수정할 수 없습니다",
-                    HttpStatus.GONE
-            );
+            throw new ReviewException("삭제된 리뷰는 수정할 수 없습니다");
         }
 
-        // ❌ 작성자 확인
         if (!review.getCustomerId().equals(customerId)) {
-            throw new ReviewException(
-                    "수정 권한이 없습니다",
-                    HttpStatus.FORBIDDEN
-            );
+            throw new ReviewException("수정 권한이 없습니다");
         }
 
         review.setRating(request.getRating());
@@ -167,47 +129,26 @@ public class ReviewService {
      */
     public void softDelete(UUID reviewId, String customerId) {
 
-        if (reviewId == null) {
-            throw new ReviewException("리뷰 ID는 필수입니다", HttpStatus.BAD_REQUEST);
-        }
-
-        // 1️⃣ 현재 사용자의 역할 확인
         String userRole = SecurityUtil.getCurrentUserRole();
 
         if (userRole == null ||
                 (!userRole.equals("CUSTOMER") &&
                         !userRole.equals("MANAGER") &&
                         !userRole.equals("MASTER"))) {
-            throw new ReviewException(
-                    "리뷰 삭제 권한이 없습니다. (CUSTOMER, MANAGER, MASTER만 가능)",
-                    HttpStatus.FORBIDDEN
-            );
+            throw new ReviewException("리뷰 삭제 권한이 없습니다");
         }
 
-        // 2️⃣ 리뷰 조회
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new ReviewException(
-                        "리뷰를 찾을 수 없습니다",
-                        HttpStatus.NOT_FOUND
-                ));
+                .orElseThrow(() -> new ReviewException("리뷰를 찾을 수 없습니다"));
 
-        // 3️⃣ CUSTOMER인 경우만 작성자 확인
         if (userRole.equals("CUSTOMER") && !review.getCustomerId().equals(customerId)) {
-            throw new ReviewException(
-                    "리뷰 삭제 권한이 없습니다. (작성자만 삭제 가능)",
-                    HttpStatus.FORBIDDEN
-            );
+            throw new ReviewException("리뷰 삭제 권한이 없습니다");
         }
 
-        // 4️⃣ 이미 삭제된 리뷰인지 확인
         if (review.getDeletedAt() != null) {
-            throw new ReviewException(
-                    "이미 삭제된 리뷰입니다",
-                    HttpStatus.GONE
-            );
+            throw new ReviewException("이미 삭제된 리뷰입니다");
         }
 
-        // 5️⃣ 소프트 삭제 실행
         review.setDeletedAt(LocalDateTime.now());
         review.setDeletedBy(customerId);
         reviewRepository.save(review);
