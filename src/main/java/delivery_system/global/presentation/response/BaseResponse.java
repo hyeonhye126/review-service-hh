@@ -38,8 +38,8 @@ public class BaseResponse<T> {
      * return BaseResponse.onSuccess(review);
      * return BaseResponse.onSuccess(reviewList);
      */
-    public static <T> BaseResponse<T> onSuccess(T result) {
-        return new BaseResponse<>("SUCCESS", "통신에 성공하였습니다.", result);
+    public static <T> BaseResponse<T> onSuccess(String msg, T result) {
+        return new BaseResponse<>("SUCCESS", msg, result);
     }
 
     /**

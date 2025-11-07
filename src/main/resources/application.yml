@@ -2,17 +2,8 @@ server:
   port: 8084
 
 spring:
-  config:
-    import: optional:file:.env[.properties]
   application:
-    name: reviewservice
-
-  # 데이터베이스 설정 (최상위 레벨)
-  datasource:
-    url: jdbc:postgresql://ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com:5432/test-db
-    driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: postgres
+    name: reviewService
 
   # Redis 설정 (최상위 레벨)
   data:
@@ -21,10 +12,19 @@ spring:
       port: 6379
       database: 0
 
+  # 데이터베이스 설정 (최상위 레벨)
+  datasource:
+    url: jdbc:postgresql://ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com:5432/test-db
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+  sql:
+    init:
+      mode: always
+      separator: //
+
   # JPA 설정 (최상위 레벨) ⭐ 여기가 핵심!
   jpa:
-    hibernate:
-      ddl-auto: update
     properties:
       hibernate:
         show_sql: true
@@ -63,7 +63,6 @@ jwt:
 management:
   tracing:
     sampling:
-      # 모든 요청을 트레이싱하려면 1.0으로 설정합니다.
       probability: 1.0
   zipkin:
     tracing:
@@ -71,12 +70,12 @@ management:
   endpoints:
     web:
       exposure:
-        # 트레이싱과 관련된 actuator 엔드포인트도 노출합니다.
         include: health,info,metrics,prometheus,env,beans,loggers,conditions,httptrace,threaddump,zipkin
 
 # 로깅 설정 (최상위 레벨)
 logging:
   level:
+    root: info
     io.zipkin.reporter2: DEBUG
     org.springframework.security: DEBUG
     delivery_system: INFO
@@ -88,18 +87,3 @@ logging:
     org.hibernate.engine.transaction: TRACE
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [%thread] [%-40.40logger{39}] [%X{traceId},%X{spanId}] : %m%n"
----
-
-# Docker 프로필 전용 설정
-spring:
-  config:
-    activate:
-      on-profile: docker
-  cloud:
-    stream:
-      kafka:
-        binder:
-          brokers: my-kafka:9092
-      bindings:
-        event-out:
-          destination: delivery_system
