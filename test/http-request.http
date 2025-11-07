@@ -1,156 +1,77 @@
-### ============================================
-### 🔄 순차적 흐름: 로그인 → 리뷰 생성 → 조회 → 수정 → 삭제
-### ============================================
+@base_url = http://localhost:8084
+@user_base_url = http://localhost:8081
+@userId = jinju1111737
+@userId2 = merong4473
+@userPwd = Test@1234
+@masterId = master1
+@masterPwd = Master@1234
+@testId = wooryeol9
+@testPwd = Test@1234
+@orderId = 78221f16-9d72-4ca0-8a86-d3b71761b933
 
-### ============================================
-### STEP 1️⃣: 로그인 (merong4473)
-### ============================================
-
-POST {{user_base_url}}/users/login
+### STEP 1: 로그인
+POST http://localhost:8081/users/login
 Content-Type: application/json
 
 {
-  "username": "merong4473",
-  "password": "Test@1234"
+  "username": "{{userId2}}",
+  "password": "{{userPwd}}"
 }
 
 > {%
-  if (response.status === 200) {
-    const token = response.body.accessToken;
+    const token = response.body.result.accessToken;
     client.global.set("auth_token", token);
-    
-    client.log("✅ 로그인 성공! (merong4473)");
-    client.log("📌 토큰 저장됨");
-  } else {
-    client.log("❌ 로그인 실패: " + response.status);
-  }
 %}
 
-### ============================================
-### STEP 2️⃣: 리뷰 생성
-### ============================================
-
-POST {{base_url}}/api/v1/reviews/{{storeId}}/orders/{{orderId}}
-Authorization: Bearer {{auth_token}}
-Content-Type: application/json
-
-{
-  "rating": 5,
-  "content": "정말 맛있는 음식입니다! 배송도 빠르고 친절했어요. 다시 또 주문하고 싶습니다."
-}
-
-> {%
-  if (response.status === 201) {
-    const reviewId = response.body.reviewId;
-    client.global.set("created_review_id", reviewId);
-    
-    client.log("✅ 리뷰 생성 성공!");
-    client.log("📌 reviewId 저장됨");
-  } else {
-    client.log("❌ 리뷰 생성 실패: " + response.status);
-  }
-%}
-
-### ============================================
-### STEP 3️⃣: 리뷰 조회 - 가게별 목록
-### ============================================
-
-GET {{base_url}}/api/v1/reviews/store/{{storeId}}?page=1&size=10
-Content-Type: application/json
-
-> {%
-  if (response.status === 200) {
-    const totalElements = response.body.totalElements || 0;
-    client.log("✅ 가게별 리뷰 조회 성공!");
-    client.log("📊 총 리뷰 개수: " + totalElements);
-  } else {
-    client.log("❌ 조회 실패: " + response.status);
-  }
-%}
-
-### ============================================
-### STEP 3-2️⃣: 리뷰 조회 - 주문별 단일 조회
-### ============================================
-
-GET {{base_url}}/api/v1/reviews/order/{{orderId}}
-Content-Type: application/json
-
-> {%
-  if (response.status === 200) {
-    client.log("✅ 주문별 리뷰 조회 성공!");
-  } else {
-    client.log("❌ 조회 실패: " + response.status);
-  }
-%}
-
-### ============================================
-### STEP 3-3️⃣: 내 리뷰 목록 조회
-### ============================================
-
-GET {{base_url}}/api/v1/reviews?page=1&size=10
-Authorization: Bearer {{auth_token}}
-Content-Type: application/json
-
-> {%
-  if (response.status === 200) {
-    const reviews = response.body.content || [];
-    const totalElements = response.body.totalElements || 0;
-    
-    client.log("✅ 내 리뷰 목록 조회 성공!");
-    client.log("📊 나의 리뷰 개수: " + totalElements);
-  } else {
-    client.log("❌ 조회 실패: " + response.status);
-  }
-%}
-
-### ============================================
-### STEP 4️⃣: 리뷰 수정
-### ============================================
-
-PUT {{base_url}}/api/v1/reviews/{{created_review_id}}
+### STEP 2: 리뷰 생성
+POST {{base_url}}/api/v1/reviews/{{userId}}/{{storeId}}/{{orderId}}/create
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
   "rating": 4,
-  "content": "다시 생각해보니 조금 비싼 것 같아요. 하지만 맛과 품질은 훌륭합니다!"
+  "content": "맛과 품질 훌륭합니다!"
 }
 
-> {%
-  if (response.status === 200) {
-    client.log("✅ 리뷰 수정 성공!");
-    client.log("변경 후: rating=" + response.body.rating);
-  } else {
-    client.log("❌ 리뷰 수정 실패: " + response.status);
-  }
-%}
 
-### ============================================
-### STEP 5️⃣: 리뷰 삭제
-### ============================================
-
-DELETE {{base_url}}/api/v1/reviews/{{created_review_id}}
+### STEP 3: 가게 리뷰 조회
+GET {{base_url}}/api/v1/reviews/store/{{storeId}}
 Authorization: Bearer {{auth_token}}
+Content-Type: application/json
 
-> {%
-  if (response.status === 204) {
-    client.log("✅ 리뷰 삭제 성공!");
-  } else {
-    client.log("❌ 리뷰 삭제 실패: " + response.status);
-  }
-%}
 
-### ============================================
-### STEP 6️⃣: 삭제 확인
-### ============================================
-
-GET {{base_url}}/api/v1/reviews/order/{{orderId}}
+### STEP 3-2: 주문건 리뷰 조회
+GET {{base_url}}/api/v1/reviews/{{userId2}}/order/fb947574-c95a-47f5-a549-e23ba8b64e83
+Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 > {%
-  if (response.status === 404) {
-    client.log("✅ 삭제 확인 완료!");
-  } else {
-    client.log("❌ 예상: 404 / 실제: " + response.status);
-  }
+    if (response.body != null) {
+        const reviewId = response.body.result.reviewId;
+        const storeId = response.body.result.storeId;
+        client.global.set("reviewId", reviewId);
+        client.global.set("storeId", storeId);
+    }
 %}
+
+### STEP 3-3: 내 리뷰 목록 조회
+GET {{base_url}}/api/v1/reviews/user/{{userId}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+### STEP 4: 리뷰 수정
+PUT {{base_url}}/api/v1/reviews/{{userId2}}/{{reviewId}}
+Authorization: Bearer {{auth_token}}
+Content-Type: application/json
+
+{
+  "rating": 4
+}
+
+### STEP 5: 사용자 리뷰 한개 삭제
+DELETE {{base_url}}/api/v1/reviews/{{userId}}/delete/{{reviewId}}
+Authorization: Bearer {{auth_token}}
+
+### STEP 6: 사용자 리뷰 전체 삭제
+DELETE {{base_url}}/api/v1/reviews/{{userId}}/deleteAll
+Authorization: Bearer {{auth_token}}
