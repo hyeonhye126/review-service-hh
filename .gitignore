@@ -44,4 +44,4 @@ secrets.yml
 node_modules
 .dist/
 .pem
-reviewservice/rest-client.env.json
+.env
