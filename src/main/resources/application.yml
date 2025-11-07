@@ -1,29 +1,29 @@
 server:
   port: 8084
 
+jwt:
+  secret: ${JWT_SECRET_KEY}
+  expiration: 3600000
+
 spring:
   application:
     name: reviewService
 
-  # Redis 설정 (최상위 레벨)
-  data:
-    redis:
-      host: ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com
-      port: 6379
-      database: 0
+  config:
+    import: optional:file:.env[.properties]
+    activate:
+      on-profile: default
 
-  # 데이터베이스 설정 (최상위 레벨)
   datasource:
-    url: jdbc:postgresql://ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com:5432/test-db
+    url: ${DB_URL}
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: postgres
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   sql:
     init:
       mode: always
       separator: //
 
-  # JPA 설정 (최상위 레벨) ⭐ 여기가 핵심!
   jpa:
     properties:
       hibernate:
@@ -32,51 +32,20 @@ spring:
         implicit_naming_strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  # Kafka 설정 (프로필별로 분리)
-  cloud:
-    stream:
-      kafka:
-        binder:
-          brokers: localhost:9092
-        streams:
-          binder:
-            configuration:
-              default:
-                key:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-                value:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-      bindings:
-        event-in:
-          group: reviewservice
-          destination: untitled
-          contentType: application/json
-        event-out:
-          destination: untitled
-          contentType: application/json
-
-# JWT 설정 (최상위 레벨)
-jwt:
-  secret: ${JWT_SECRET_KEY:my-default-secret7e9f3b4c5d7c5d8e4f12a9ec17f1f4d29c6b1f8a2}
-  expiration: 3600000
-
 management:
   tracing:
     sampling:
       probability: 1.0
   zipkin:
     tracing:
-      endpoint: http://ec2-54-180-115-23.ap-northeast-2.compute.amazonaws.com:9411/api/v2/spans
+      endpoint: ${ZIPKIN_ENDPOINT}
   endpoints:
     web:
       exposure:
         include: health,info,metrics,prometheus,env,beans,loggers,conditions,httptrace,threaddump,zipkin
 
-# 로깅 설정 (최상위 레벨)
 logging:
   level:
-    root: info
-    io.zipkin.reporter2: DEBUG
     org.springframework.security: DEBUG
     delivery_system: INFO
     org.hibernate.type: trace
@@ -85,5 +54,6 @@ logging:
     org.hibernate.SQL: debug
     org.springframework.transaction: TRACE
     org.hibernate.engine.transaction: TRACE
+    io.zipkin.reporter2: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [%thread] [%-40.40logger{39}] [%X{traceId},%X{spanId}] : %m%n"
