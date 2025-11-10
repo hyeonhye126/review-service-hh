@@ -9,6 +9,11 @@
 @testPwd = Test@1234
 @orderId = 78221f16-9d72-4ca0-8a86-d3b71761b933
 
+### 헬스 체크 (서버 상태 확인)
+GET http://localhost:8084/actuator/health
+Accept: application/json
+
+
 ### STEP 1: 로그인
 POST http://localhost:8081/users/login
 Content-Type: application/json

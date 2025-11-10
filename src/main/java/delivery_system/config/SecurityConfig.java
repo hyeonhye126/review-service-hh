@@ -1,5 +1,6 @@
-package delivery_system.global.infra.cofig.security;
+package delivery_system.config;
 
+import delivery_system.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

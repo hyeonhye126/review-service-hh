@@ -1,6 +1,6 @@
 package delivery_system.review.application.service;
 
-import delivery_system.global.exception.review.ReviewException;
+import delivery_system.common.exception.review.ReviewException;
 import delivery_system.review.domain.entity.ReviewEntityV1;
 import delivery_system.review.domain.repository.ReviewRepositoryV1;
 import delivery_system.review.presentation.dto.request.ReqCreateReviewDtoV1;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ReviewServiceV1 {
+public class ReviewService {
 
     private final ReviewRepositoryV1 reviewRepository;
 

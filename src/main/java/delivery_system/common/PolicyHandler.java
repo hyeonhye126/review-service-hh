@@ -1,4 +1,4 @@
-package delivery_system.global.presentation;
+package delivery_system.common;
 
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Bean;

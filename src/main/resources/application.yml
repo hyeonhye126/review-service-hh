@@ -43,17 +43,21 @@ management:
     web:
       exposure:
         include: health,info,metrics,prometheus,env,beans,loggers,conditions,httptrace,threaddump,zipkin
+  endpoint:
+    health:
+      show-details: always
 
 logging:
   level:
-    org.springframework.security: DEBUG
-    delivery_system: INFO
-    org.hibernate.type: trace
-    org.springframework.cloud: debug
-    org.springframework.jdbc.core: debug
-    org.hibernate.SQL: debug
-    org.springframework.transaction: TRACE
-    org.hibernate.engine.transaction: TRACE
-    io.zipkin.reporter2: DEBUG
+    root: info
+  #    org.springframework.security: DEBUG
+#    delivery_system: INFO
+#    org.hibernate.type: trace
+#    org.springframework.cloud: debug
+#    org.springframework.jdbc.core: debug
+#    org.hibernate.SQL: debug
+#    org.springframework.transaction: TRACE
+#    org.hibernate.engine.transaction: TRACE
+#    io.zipkin.reporter2: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [%thread] [%-40.40logger{39}] [%X{traceId},%X{spanId}] : %m%n"

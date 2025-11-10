@@ -1,4 +1,4 @@
-package delivery_system.global.exception.review;
+package delivery_system.common.exception.review;
 
 /**
  * 리뷰 관련 예외 클래스

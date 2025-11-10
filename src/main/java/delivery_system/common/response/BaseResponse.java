@@ -1,4 +1,4 @@
-package delivery_system.global.presentation.response;
+package delivery_system.common.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
