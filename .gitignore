@@ -1,47 +1,72 @@
-/target/
-/bin/
-/.settings/
-*#
-*.iml
-*.ipr
-*.iws
-*.jar
-*.sw?
-*~
-.#*
-.*.md.html
-.DS_Store
-.classpath
-.factorypath
-.gradle
+# Git 관련
+.git
+.gitignore
+.gitattributes
+
+# IDE 관련
 .idea
-.metadata
-.project
-.recommenders
-.settings
-.springBeans
-/build
-/code
-MANIFEST.MF
-_site/
-activemq-data
-bin
-build
-build.log
-dependency-reduced-pom.xml
-dump.rdb
-interpolated*.xml
-lib/
-manifest.yml
-overridedb.*
-settings.xml
-target
-transaction-logs
-.flattened-pom.xml
-secrets.yml
-.gradletasknamecache
-.sts4-cache
-node_modules
-.dist/
-.pem
+.vscode
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+
+# Gradle 빌드 캐시 (Docker 빌드 시 새로 생성됨)
+.gradle
+out/
+
+# 환경 설정 (민감 정보)
 .env
+.env.local
+.env.*.local
+
+# 로그 파일
+*.log
+logs/
+
+# 임시 파일
+tmp/
+temp/
+*.tmp
+
+# Docker 관련 (docker-compose 파일만 제외)
+docker-compose.yml
+docker-compose*.yml
+
+# 문서 및 마크다운
+*.md
+README*
+LICENSE
+docs/
+
+# 테스트 관련 (빌드에 불필요)
+src/test/
+
+# 기타
+node_modules/
+.venv/
+venv/
+build/classes/java/main/delivery_system/ReviewServiceApplication.class
+build/classes/java/main/delivery_system/common/KafkaProcessor.class
+build/classes/java/main/delivery_system/common/PolicyHandler.class
+build/classes/java/main/delivery_system/common/ReviewHateoasProcessor.class
+build/classes/java/main/delivery_system/common/exception/GlobalExceptionAdvice.class
+build/classes/java/main/delivery_system/common/exception/review/ReviewException.class
+build/classes/java/main/delivery_system/common/response/BaseResponse.class
+build/classes/java/main/delivery_system/config/SecurityConfig.class
+build/classes/java/main/delivery_system/event/AbstractEvent$1.class
+build/classes/java/main/delivery_system/event/AbstractEvent.class
+build/classes/java/main/delivery_system/review/application/service/ReviewService.class
+build/classes/java/main/delivery_system/review/domain/UserRole.class
+build/classes/java/main/delivery_system/review/domain/entity/ReviewEntityV1.class
+build/classes/java/main/delivery_system/review/domain/repository/ReviewRepositoryV1.class
+build/classes/java/main/delivery_system/review/presentation/controller/ReviewControllerV1.class
+build/classes/java/main/delivery_system/review/presentation/dto/request/ReqCreateReviewDtoV1.class
+build/classes/java/main/delivery_system/review/presentation/dto/request/ReqUpdateReviewDtoV1.class
+build/classes/java/main/delivery_system/review/presentation/dto/response/ResReviewDtoV1.class
+build/classes/java/main/delivery_system/review/presentation/dto/response/ResStoreReviewDtoV1.class
+build/classes/java/main/delivery_system/security/JwtAuthenticationFilter.class
+build/classes/java/main/delivery_system/security/JwtUtil.class
+build/resources/main/application.yml
+build/resources/main/logback-spring.xml
