@@ -1,13 +1,11 @@
-package delivery_system.global.exception;
+package delivery_system.common.exception;
 
-import delivery_system.global.exception.review.ReviewException;
-import delivery_system.global.presentation.response.BaseResponse;
+import delivery_system.common.exception.review.ReviewException;
+import delivery_system.common.response.BaseResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * 전역 예외 처리 Advice

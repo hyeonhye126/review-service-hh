@@ -1,4 +1,4 @@
-package delivery_system.global.infra;
+package delivery_system.common;
 
 import delivery_system.review.domain.entity.ReviewEntityV1;
 import org.springframework.hateoas.EntityModel;

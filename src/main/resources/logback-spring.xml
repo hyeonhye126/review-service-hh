@@ -2,7 +2,7 @@
 <!-- 60초마다 설정 파일의 변경을 확인하여 변경 시 갱신 -->
 <configuration scan="true" scanPeriod="60 seconds">
     <!-- log file path -->
-    <property name="LOG_PATH" value="/Users/wooryeolkim/Desktop/logs/reviewServiceLogs"/>
+    <property name="LOG_PATH" value="./logs/reviewServiceLogs"/>
     <!-- log file name -->
     <property name="LOG_FILE_NAME" value="logging"/>
     <!-- err log file name -->

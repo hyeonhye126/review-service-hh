@@ -1,4 +1,4 @@
-package delivery_system.global.infra.cofig.security;
+package delivery_system.security;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;

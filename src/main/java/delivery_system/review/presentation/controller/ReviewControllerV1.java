@@ -1,7 +1,7 @@
 package delivery_system.review.presentation.controller;
 
-import delivery_system.global.presentation.response.BaseResponse;
-import delivery_system.review.application.service.ReviewServiceV1;
+import delivery_system.common.response.BaseResponse;
+import delivery_system.review.application.service.ReviewService;
 import delivery_system.review.presentation.dto.request.ReqCreateReviewDtoV1;
 import delivery_system.review.presentation.dto.request.ReqUpdateReviewDtoV1;
 import delivery_system.review.presentation.dto.response.ResReviewDtoV1;
@@ -18,7 +18,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/reviews")
 public class ReviewControllerV1 {
 
-    private final ReviewServiceV1 reviewService;
+    private final ReviewService reviewService;
 
     // 가게 아이디로 리뷰 조회
     @GetMapping("/store/{storeId}")
